@@ -106,5 +106,6 @@ func NewTestConfig() *Config {
 		RegionMaxSize:                       144 * MB,
 		RegionSplitSize:                     96 * MB,
 		DBPath:                              "/tmp/badger",
+		//DBPath:                              "D:/tmp/badger",
 	}
 }
