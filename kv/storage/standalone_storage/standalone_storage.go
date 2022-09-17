@@ -96,7 +96,7 @@ func NewStandAloneStorageReader(txn *badger.Txn) *StandAloneStorageReader {
 func (s *StandAloneStorageReader) GetCF(cf string, key []byte) ([]byte, error) {
 	val, err := engine_util.GetCFFromTxn(s.txn, cf, key)
 	if err == badger.ErrKeyNotFound {
-		return nil, nil
+		return nil, err
 	}
 	return val, nil
 }
