@@ -79,9 +79,8 @@ func (server *Server) RawScan(_ context.Context, req *kvrpcpb.RawScanRequest) (*
 
 	iter := reader.IterCF(req.Cf)
 	defer iter.Close()
-	iter.Seek(req.StartKey)
 
-	for ; iter.Valid(); iter.Next() {
+	for iter.Seek(req.StartKey); iter.Valid(); iter.Next() {
 		item := iter.Item()
 		key := item.Key()
 		val, _ := item.Value()
