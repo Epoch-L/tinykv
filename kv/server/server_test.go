@@ -82,6 +82,7 @@ func TestRawGetNotFound1(t *testing.T) {
 	}
 	resp, err := server.RawGet(nil, req)
 	assert.Nil(t, err)
+	//从这里就可以看出，上层不认为not found是一种err
 	assert.True(t, resp.NotFound)
 }
 

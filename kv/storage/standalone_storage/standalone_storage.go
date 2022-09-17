@@ -31,6 +31,7 @@ func NewStandAloneStorage(conf *config.Config) *StandAloneStorage {
 	raftPath := path.Join(dbPath, "raft")
 
 	kvDB := engine_util.CreateDB(kvPath, false)
+	//project1没用到raft
 	raftDB := engine_util.CreateDB(raftPath, true)
 
 	//func CreateDB(path string, raft bool) *badger.DB
@@ -84,17 +85,20 @@ func (s *StandAloneStorage) Write(ctx *kvrpcpb.Context, batch []storage.Modify) 
 //实现 type StorageReader interface 接口
 
 type StandAloneStorageReader struct {
-	txn *badger.Txn
+	KvTxn *badger.Txn
 }
 
 func NewStandAloneStorageReader(txn *badger.Txn) *StandAloneStorageReader {
 	return &StandAloneStorageReader{
-		txn: txn,
+		KvTxn: txn,
 	}
 }
 
 func (s *StandAloneStorageReader) GetCF(cf string, key []byte) ([]byte, error) {
-	val, err := engine_util.GetCFFromTxn(s.txn, cf, key)
+	val, err := engine_util.GetCFFromTxn(s.KvTxn, cf, key)
+	//StandAloneStorage是底层的一个系统,这里认为not found不是err
+	//将not found屏蔽掉
+	//上层不认为not found是err
 	if err == badger.ErrKeyNotFound {
 		return nil, nil
 	}
@@ -102,10 +106,10 @@ func (s *StandAloneStorageReader) GetCF(cf string, key []byte) ([]byte, error) {
 }
 
 func (s *StandAloneStorageReader) IterCF(cf string) engine_util.DBIterator {
-	//func NewCFIterator(cf string, txn *badger.Txn) *BadgerIterator
-	return engine_util.NewCFIterator(cf, s.txn)
+	//func NewCFIterator(cf string, KvTxn *badger.Txn) *BadgerIterator
+	return engine_util.NewCFIterator(cf, s.KvTxn)
 }
 
 func (s *StandAloneStorageReader) Close() {
-	s.txn.Discard()
+	s.KvTxn.Discard()
 }
