@@ -14,11 +14,14 @@ func (server *Server) RawGet(_ context.Context, req *kvrpcpb.RawGetRequest) (*kv
 	// Your Code Here (1).
 	reader, err := server.storage.Reader(req.Context)
 	if err != nil {
-		return &kvrpcpb.RawGetResponse{}, err
+		//return &kvrpcpb.RawGetResponse{}, err
+		return nil, err
 	}
 	val, err := reader.GetCF(req.Cf, req.Key)
 	if err != nil {
-		return &kvrpcpb.RawGetResponse{}, nil
+		//return &kvrpcpb.RawGetResponse{}, err
+		return nil, err
+
 	}
 	resp := &kvrpcpb.RawGetResponse{
 		Value:    val,
@@ -42,7 +45,9 @@ func (server *Server) RawPut(_ context.Context, req *kvrpcpb.RawPutRequest) (*kv
 	batch := storage.Modify{Data: put}
 	err := server.storage.Write(req.Context, []storage.Modify{batch})
 	if err != nil {
-		return &kvrpcpb.RawPutResponse{}, err
+		//return &kvrpcpb.RawPutResponse{}, err
+		return nil, err
+
 	}
 	return &kvrpcpb.RawPutResponse{}, nil
 }
@@ -58,8 +63,11 @@ func (server *Server) RawDelete(_ context.Context, req *kvrpcpb.RawDeleteRequest
 	batch := storage.Modify{Data: del}
 	err := server.storage.Write(req.Context, []storage.Modify{batch})
 	if err != nil {
-		return &kvrpcpb.RawDeleteResponse{}, err
+		//return &kvrpcpb.RawDeleteResponse{}, err
+		return nil, err
+
 	}
+
 	return &kvrpcpb.RawDeleteResponse{}, nil
 }
 
@@ -69,7 +77,9 @@ func (server *Server) RawScan(_ context.Context, req *kvrpcpb.RawScanRequest) (*
 	// Hint: Consider using reader.IterCF
 	reader, err := server.storage.Reader(req.Context)
 	if err != nil {
-		return &kvrpcpb.RawScanResponse{}, err
+		//return &kvrpcpb.RawScanResponse{}, err
+		return nil, err
+
 	}
 
 	var Kvs []*kvrpcpb.KvPair
