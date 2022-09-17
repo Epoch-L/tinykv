@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/pingcap-incubator/tinykv/kv/storage"
 	"github.com/pingcap-incubator/tinykv/proto/pkg/kvrpcpb"
 )
@@ -18,7 +17,6 @@ func (server *Server) RawGet(_ context.Context, req *kvrpcpb.RawGetRequest) (*kv
 		return nil, err
 	}
 	val, err := reader.GetCF(req.Cf, req.Key)
-	fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
