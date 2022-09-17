@@ -47,6 +47,35 @@ func cleanUpTestData(conf *config.Config) error {
 	return nil
 }
 
+/*
+2022年9月17日 22点48分
+
+root@wxf:/tinykv# make project1
+GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/server -run 1
+=== RUN   TestRawGet1
+--- PASS: TestRawGet1 (0.86s)
+=== RUN   TestRawGetNotFound1
+--- PASS: TestRawGetNotFound1 (1.00s)
+=== RUN   TestRawPut1
+--- PASS: TestRawPut1 (0.83s)
+=== RUN   TestRawGetAfterRawPut1
+--- PASS: TestRawGetAfterRawPut1 (1.11s)
+=== RUN   TestRawGetAfterRawDelete1
+--- PASS: TestRawGetAfterRawDelete1 (1.14s)
+=== RUN   TestRawDelete1
+--- PASS: TestRawDelete1 (0.91s)
+=== RUN   TestRawScan1
+--- PASS: TestRawScan1 (0.89s)
+=== RUN   TestRawScanAfterRawPut1
+--- PASS: TestRawScanAfterRawPut1 (0.99s)
+=== RUN   TestRawScanAfterRawDelete1
+--- PASS: TestRawScanAfterRawDelete1 (1.10s)
+=== RUN   TestIterWithRawDelete1
+--- PASS: TestIterWithRawDelete1 (1.07s)
+PASS
+ok  	github.com/pingcap-incubator/tinykv/kv/server	9.923s
+*/
+
 func TestRawGet1(t *testing.T) {
 	conf := config.NewTestConfig()
 	s := standalone_storage.NewStandAloneStorage(conf)

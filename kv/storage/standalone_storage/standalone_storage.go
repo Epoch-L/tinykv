@@ -17,6 +17,7 @@ import (
 
 // StandAloneStorage is an implementation of `Storage` for a single-node TinyKV instance. It does not
 // communicate with other nodes and all data is stored locally.
+
 type StandAloneStorage struct {
 	// Your Data Here (1).
 	engine *engine_util.Engines

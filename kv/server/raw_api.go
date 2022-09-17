@@ -9,19 +9,18 @@ import (
 // The functions below are Server's Raw API. (implements TinyKvServer).
 // Some helper methods can be found in sever.go in the current directory
 
+// 上层允许err时返回nil结构体
+
 // RawGet return the corresponding Get response based on RawGetRequest's CF and Key fields
 func (server *Server) RawGet(_ context.Context, req *kvrpcpb.RawGetRequest) (*kvrpcpb.RawGetResponse, error) {
 	// Your Code Here (1).
 	reader, err := server.storage.Reader(req.Context)
 	if err != nil {
-		//return &kvrpcpb.RawGetResponse{}, err
 		return nil, err
 	}
 	val, err := reader.GetCF(req.Cf, req.Key)
 	if err != nil {
-		//return &kvrpcpb.RawGetResponse{}, err
 		return nil, err
-
 	}
 	resp := &kvrpcpb.RawGetResponse{
 		Value:    val,
@@ -45,7 +44,6 @@ func (server *Server) RawPut(_ context.Context, req *kvrpcpb.RawPutRequest) (*kv
 	batch := storage.Modify{Data: put}
 	err := server.storage.Write(req.Context, []storage.Modify{batch})
 	if err != nil {
-		//return &kvrpcpb.RawPutResponse{}, err
 		return nil, err
 
 	}
@@ -63,11 +61,8 @@ func (server *Server) RawDelete(_ context.Context, req *kvrpcpb.RawDeleteRequest
 	batch := storage.Modify{Data: del}
 	err := server.storage.Write(req.Context, []storage.Modify{batch})
 	if err != nil {
-		//return &kvrpcpb.RawDeleteResponse{}, err
 		return nil, err
-
 	}
-
 	return &kvrpcpb.RawDeleteResponse{}, nil
 }
 
@@ -77,11 +72,8 @@ func (server *Server) RawScan(_ context.Context, req *kvrpcpb.RawScanRequest) (*
 	// Hint: Consider using reader.IterCF
 	reader, err := server.storage.Reader(req.Context)
 	if err != nil {
-		//return &kvrpcpb.RawScanResponse{}, err
 		return nil, err
-
 	}
-
 	var Kvs []*kvrpcpb.KvPair
 	limit := req.Limit
 
