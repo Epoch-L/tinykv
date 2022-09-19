@@ -16,7 +16,6 @@ package raft
 
 import (
 	"errors"
-	"log"
 	rand2 "math/rand"
 	"sort"
 	"time"
@@ -190,9 +189,9 @@ func newRaft(c *Config) *Raft {
 		Term:             hardState.Term,    // Term 和 Vote 从持久化存储中读取
 		Vote:             hardState.Vote,    // Term 和 Vote 从持久化存储中读取
 		RaftLog:          newLog(c.Storage), // Log 也从持久化存储中读取
-		Prs:              nil,
+		Prs:              map[uint64]*Progress{},
 		State:            StateFollower,
-		votes:            nil,
+		votes:            map[uint64]bool{},
 		msgs:             nil,
 		Lead:             0,
 		heartbeatTimeout: c.HeartbeatTick,
@@ -205,7 +204,7 @@ func newRaft(c *Config) *Raft {
 	//生成随机选举超时时间
 	rf.resetRandomizedElectionTimeout()
 
-	return nil
+	return rf
 }
 
 // resetRandomizedElectionTimeout 生成随机选举超时时间，范围在 [r.electionTimeout, 2*r.electionTimeout]
@@ -310,9 +309,7 @@ func (r *Raft) followerTick() {
 func (r *Raft) becomeFollower(term uint64, lead uint64) {
 	// Your Code Here (2A).
 	// 领导者应在其任期内提出noop条目
-	log.Println(term, lead)
-	log.Println(r.Term)
-	log.Println(r)
+
 	if term > r.Term {
 		// 只有 Term > currentTerm 的时候才需要对 Vote 进行重置
 		// 这样可以保证在一个任期内只会进行一次投票
