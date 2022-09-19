@@ -338,12 +338,13 @@ func testNonleadersElectionTimeoutNonconflict(t *testing.T, state StateType) {
 	size := 5
 	rs := make([]*Raft, size)
 	ids := idsBySize(size)
-	for k := range rs {
+	for k := range rs { //5个节点,超时10
 		rs[k] = newTestRaft(ids[k], ids, et, 1, NewMemoryStorage())
 	}
 	conflicts := 0
+	//测试1000轮
 	for round := 0; round < 1000; round++ {
-		for _, r := range rs {
+		for _, r := range rs { //range 5,全部become
 			switch state {
 			case StateFollower:
 				r.becomeFollower(r.Term+1, None)
@@ -357,11 +358,12 @@ func testNonleadersElectionTimeoutNonconflict(t *testing.T, state StateType) {
 			for _, r := range rs {
 				r.tick()
 				if len(r.readMessages()) > 0 {
-					timeoutNum++
+					timeoutNum++ //读到消息，说明进行选举了
 				}
 			}
 		}
 		// several rafts time out at the same tick
+		// 说明不止一个进行选举，发送冲突
 		if timeoutNum > 1 {
 			conflicts++
 		}

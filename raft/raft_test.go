@@ -100,7 +100,9 @@ func TestLeaderElection2AA(t *testing.T) {
 
 // testLeaderCycle verifies that each node in a cluster can campaign
 // and be elected in turn. This ensures that elections work when not
-// starting from a clean slate (as they do in TestLeaderElection)
+// starting from a clean slate (as they do in TestLeaderElection)、
+//testLeaderCycle验证集群中的每个节点是否可以依次进行活动和选择。
+//这确保了选举在没有从头开始时就可以进行（就像在TestLeaderElection中一样）
 func TestLeaderCycle2AA(t *testing.T) {
 	var cfg func(*Config)
 	n := newNetworkWithConfig(cfg, nil, nil, nil)
