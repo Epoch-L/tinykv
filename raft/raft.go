@@ -183,7 +183,6 @@ func newRaft(c *Config) *Raft {
 	if c.peers == nil {
 		c.peers = conState.Nodes
 	}
-
 	rf := &Raft{
 		id:               c.ID,
 		Term:             hardState.Term,    // Term 和 Vote 从持久化存储中读取
@@ -204,13 +203,20 @@ func newRaft(c *Config) *Raft {
 	//生成随机选举超时时间
 	rf.resetRandomizedElectionTimeout()
 
+	// 更新集群配置
+	rf.Prs = make(map[uint64]*Progress)
+	for _, id := range c.peers {
+		rf.Prs[id] = &Progress{}
+	}
 	return rf
 }
 
 // resetRandomizedElectionTimeout 生成随机选举超时时间，范围在 [r.electionTimeout, 2*r.electionTimeout]
 func (r *Raft) resetRandomizedElectionTimeout() {
-	rand := rand2.New(rand2.NewSource(time.Now().UnixNano()))
-	r.randomElectionTimeout = r.electionTimeout + rand.Intn(r.electionTimeout)
+	rand2.Seed(time.Now().UnixNano())
+	//[0,n)+electionTimeout
+	//[electionTimeout,electionTimeout*2)
+	r.randomElectionTimeout = r.electionTimeout + rand2.Intn(r.electionTimeout)
 }
 
 // sendAppend sends an append RPC with new entries (if any) and the
@@ -289,7 +295,7 @@ func (r *Raft) leaderTick() {
 func (r *Raft) candidateTick() {
 	r.electionElapsed++
 	// 选举超时 发起选举
-	if r.electionElapsed >= r.electionTimeout {
+	if r.electionElapsed >= r.randomElectionTimeout {
 		r.electionElapsed = 0
 		// MessageType_MsgHup 属于内部消息，也不需要经过 RawNode 处理
 		r.Step(pb.Message{From: r.id, To: r.id, MsgType: pb.MessageType_MsgHup})
@@ -298,7 +304,7 @@ func (r *Raft) candidateTick() {
 func (r *Raft) followerTick() {
 	r.electionElapsed++
 	// 选举超时 发起选举
-	if r.electionElapsed >= r.electionTimeout {
+	if r.electionElapsed >= r.randomElectionTimeout {
 		r.electionElapsed = 0
 		// MessageType_MsgHup 属于内部消息，也不需要经过 RawNode 处理
 		r.Step(pb.Message{From: r.id, To: r.id, MsgType: pb.MessageType_MsgHup})
@@ -342,7 +348,6 @@ func (r *Raft) becomeLeader() {
 	//领导者应在其任期内提出noop条目
 	r.State = StateLeader
 	r.Lead = r.id
-
 	//初始化 nextIndex 和 matchIndex
 	for id := range r.Prs {
 		r.Prs[id].Next = r.RaftLog.LastIndex() + 1 // 初始化为 leader 的最后一条日志索引（后续出现冲突会往前移动）
@@ -479,7 +484,7 @@ func (r *Raft) candidateStep(m pb.Message) {
 }
 func (r *Raft) leaderStep(m pb.Message) {
 	//Leader 可以接收到的消息：
-	//MsgBeat、MsgHeartBeatResponse、MsgRequestVote、MsgPropose、MsgAppendResponse
+	//MsgBeat、MsgHeartBeatResponse、MsgRequestVote、MsgPropose、MsgAppendResponse、MsgAppend
 	switch m.MsgType {
 	case pb.MessageType_MsgHup:
 		//Local Msg，用于请求节点开始选举，仅仅需要一个字段。
@@ -490,11 +495,12 @@ func (r *Raft) leaderStep(m pb.Message) {
 		r.broadcastHeartBeat()
 	case pb.MessageType_MsgPropose:
 		//Local Msg，用于上层请求 propose 条目
-		//3A
 		//TODO MsgPropose
+		r.handlePropose(m)
 	case pb.MessageType_MsgAppend:
 		//Common Msg，用于 Leader 给其他节点同步日志条目
-		//TODO Leader No processing required
+		//TODO 网络分区的情况，也是要的
+		r.handleAppendEntries(m)
 	case pb.MessageType_MsgAppendResponse:
 		//Common Msg，用于节点告诉 Leader 日志同步是否成功，和 MsgAppend 对应
 		//TODO MsgAppendResponse
@@ -762,10 +768,12 @@ func (r *Raft) handleSnapshot(m pb.Message) {
 
 // handleRequestVoteResponse 节点收到 RequestVote Response 时候的处理
 func (r *Raft) handleRequestVoteResponse(m pb.Message) {
+	//记录投票
+	r.votes[m.From] = !m.Reject
 	// 更新节点的投票信息
 	count := 0
-	for _, ok := range r.votes {
-		if ok {
+	for _, agree := range r.votes {
+		if agree {
 			count++
 		}
 	}
@@ -816,4 +824,32 @@ func (r *Raft) handleHeartbeatResponse(m pb.Message) {
 			r.sendAppend(m.From)
 		}
 	}
+}
+
+// handlePropose 追加从上层应用接收到的新日志，并广播给 follower
+func (r *Raft) handlePropose(m pb.Message) {
+	r.appendEntry(m.Entries)
+	// leader 处于领导权禅让，停止接收新的请求
+	if r.leadTransferee != None {
+		return
+	}
+	r.Prs[r.id].Match = r.RaftLog.LastIndex()
+	r.Prs[r.id].Next = r.RaftLog.LastIndex() + 1
+	if len(r.Prs) == 1 {
+		r.RaftLog.commit(r.RaftLog.LastIndex())
+	} else {
+		r.broadcastAppendEntry()
+	}
+}
+func (r *Raft) appendEntry(entries []*pb.Entry) {
+	lastIndex := r.RaftLog.LastIndex() // leader 最后一条日志的索引
+	for i := range entries {
+		// 设置新日志的索引和任期
+		entries[i].Index = lastIndex + uint64(i) + 1
+		entries[i].Term = r.Term
+		if entries[i].EntryType == pb.EntryType_EntryConfChange {
+			r.PendingConfIndex = entries[i].Index
+		}
+	}
+	r.RaftLog.appendNewEntry(entries)
 }

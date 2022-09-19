@@ -14,7 +14,9 @@
 
 package raft
 
-import pb "github.com/pingcap-incubator/tinykv/proto/pkg/eraftpb"
+import (
+	pb "github.com/pingcap-incubator/tinykv/proto/pkg/eraftpb"
+)
 
 // RaftLog manage the log entries, its struct look like:
 //
@@ -147,7 +149,13 @@ func (l *RaftLog) LastIndex() uint64 {
 // 返回给定索引中log的term
 func (l *RaftLog) Term(i uint64) (uint64, error) {
 	// Your Code Here (2A).
-	return l.entries[i-l.dummyIndex].Term, nil
+	if i >= l.dummyIndex {
+		return l.entries[i-l.dummyIndex].Term, nil
+	} else {
+		// 3. 否则的话 i 只能是快照中的日志
+		term, err := l.storage.Term(i)
+		return term, err
+	}
 	//2C
 }
 

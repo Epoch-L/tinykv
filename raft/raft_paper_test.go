@@ -84,6 +84,9 @@ func TestStartAsFollower2AA(t *testing.T) {
 // it will send a MessageType_MsgHeartbeat with m.Index = 0, m.LogTerm=0 and empty entries
 // as heartbeat to all followers.
 // Reference: section 5.2
+//TestLeaderBcastBeat测试如果领导者收到心跳信号，
+//它将向所有关注者发送一个消息类型_MsgHeartbeat，
+//其中m.Index=0，m.LogTerm=0，空条目作为心跳信号。
 func TestLeaderBcastBeat2AA(t *testing.T) {
 	// heartbeat interval
 	hi := 1
@@ -121,10 +124,15 @@ func TestCandidateStartNewElection2AA(t *testing.T) {
 // increments its current term and transitions to candidate state. It then
 // votes for itself and issues RequestVote RPCs in parallel to each of the
 // other servers in the cluster.
+//测试如果一个追随者在选举超时期间没有收到任何通信，
+//那么它就开始选举来选择一个新的领导者。
+//它增加当前term并转换为候选状态。
+//然后，它为自己投票，并向群集中的每个其他服务器并行发出RequestVote RPC。
 // Reference: section 5.2
 // Also if a candidate fails to obtain a majority, it will time out and
 // start a new election by incrementing its term and initiating another
 // round of RequestVote RPCs.
+//此外，如果候选人未能获得多数票，将暂停选举，通过增加任期并启动另一轮RequestVote RPC来开始新的选举。
 // Reference: section 5.2
 func testNonleaderStartElection(t *testing.T, state StateType) {
 	// election timeout
@@ -163,9 +171,13 @@ func testNonleaderStartElection(t *testing.T, state StateType) {
 
 // TestLeaderElectionInOneRoundRPC tests all cases that may happen in
 // leader election during one round of RequestVote RPC:
+//测试在一轮RequestVote RPC期间领导人选举中可能发生的所有情况：
 // a) it wins the election
 // b) it loses the election
 // c) it is unclear about the result
+//a）赢得选举
+//b）选举失败
+//c）结果不清楚
 // Reference: section 5.2
 func TestLeaderElectionInOneRoundRPC2AA(t *testing.T) {
 	tests := []struct {
@@ -174,6 +186,7 @@ func TestLeaderElectionInOneRoundRPC2AA(t *testing.T) {
 		state StateType
 	}{
 		// win the election when receiving votes from a majority of the servers
+		//在收到大多数服务器的投票后赢得选举
 		{1, map[uint64]bool{}, StateLeader},
 		{3, map[uint64]bool{2: true, 3: true}, StateLeader},
 		{3, map[uint64]bool{2: true}, StateLeader},
@@ -182,6 +195,7 @@ func TestLeaderElectionInOneRoundRPC2AA(t *testing.T) {
 		{5, map[uint64]bool{2: true, 3: true}, StateLeader},
 
 		// stay in candidate if it does not obtain the majority
+		//如果没有获得多数，就留在候选人中
 		{3, map[uint64]bool{}, StateCandidate},
 		{5, map[uint64]bool{2: true}, StateCandidate},
 		{5, map[uint64]bool{2: false, 3: false}, StateCandidate},
@@ -241,6 +255,10 @@ func TestFollowerVote2AA(t *testing.T) {
 // if a candidate receives an AppendEntries RPC from another server claiming
 // to be leader whose term is at least as large as the candidate's current term,
 // it recognizes the leader as legitimate and returns to follower state.
+//TestCandidateFallback测试在等待投票时，
+//如果候选人从另一台服务器接收到AppendEntries RPC
+//成为任期至少与候选人当前任期相同的领导者，
+//它承认领导者是合法的，并返回追随者状态。
 // Reference: section 5.2
 func TestCandidateFallback2AA(t *testing.T) {
 	tests := []pb.Message{
@@ -274,6 +292,7 @@ func TestCandidateElectionTimeoutRandomized2AA(t *testing.T) {
 
 // testNonleaderElectionTimeoutRandomized tests that election timeout for
 // follower or candidate is randomized.
+//测试追随者或候选人的选举超时是随机的。
 // Reference: section 5.2
 func testNonleaderElectionTimeoutRandomized(t *testing.T, state StateType) {
 	et := 10
@@ -312,6 +331,7 @@ func TestCandidatesElectionTimeoutNonconflict2AA(t *testing.T) {
 // testNonleadersElectionTimeoutNonconflict tests that in most cases only a
 // single server(follower or candidate) will time out, which reduces the
 // likelihood of split vote in the new election.
+// 在大多数情况下只有单个服务器（追随者或候选者）将超时，这会减少在新选举中出现分裂投票的可能性。
 // Reference: section 5.2
 func testNonleadersElectionTimeoutNonconflict(t *testing.T, state StateType) {
 	et := 10
@@ -348,6 +368,7 @@ func testNonleadersElectionTimeoutNonconflict(t *testing.T, state StateType) {
 	}
 
 	if g := float64(conflicts) / 1000; g > 0.3 {
+		//冲突概率
 		t.Errorf("probability of conflicts = %v, want <= 0.3", g)
 	}
 }
