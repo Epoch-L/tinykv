@@ -16,6 +16,7 @@ package raft
 
 import (
 	"errors"
+	"log"
 	rand2 "math/rand"
 	"sort"
 	"time"
@@ -309,6 +310,7 @@ func (r *Raft) followerTick() {
 func (r *Raft) becomeFollower(term uint64, lead uint64) {
 	// Your Code Here (2A).
 	// 领导者应在其任期内提出noop条目
+	log.Println(term, r.Term)
 	if term > r.Term {
 		// 只有 Term > currentTerm 的时候才需要对 Vote 进行重置
 		// 这样可以保证在一个任期内只会进行一次投票
