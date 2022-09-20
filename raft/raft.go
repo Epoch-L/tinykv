@@ -759,6 +759,7 @@ func (r *Raft) handleHeartbeat(m pb.Message) {
 		From:    r.id,
 		To:      m.From,
 		Term:    r.Term,
+		Commit:  r.RaftLog.committed,
 	}
 	if r.Term > m.Term {
 		heartBeatResp.Reject = true //拒绝接收
