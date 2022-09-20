@@ -584,7 +584,7 @@ func (r *Raft) handleRequestVote(m pb.Message) {
 	}
 	//1. 判断 Msg 的 Term 是否大于等于自己的 Term，是则更新
 	if m.Term > r.Term {
-		// term比自己大 无条件投票
+		// term比自己大 变成follower
 		r.becomeFollower(m.Term, None)
 	}
 	if (m.Term > r.Term || m.Term == r.Term && (r.Vote == None || r.Vote == m.From)) && r.RaftLog.isUpToDate(m.Index, m.LogTerm) {
