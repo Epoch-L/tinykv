@@ -647,9 +647,10 @@ func (r *Raft) handleAppendEntries(m pb.Message) {
 		//TODO 日志冲突优化：
 		//	找到冲突任期的第一条日志，下次 leader 发送 AppendEntry 的时候会将 nextIndex 设置为 ConflictIndex
 		// 	如果找不到的话就设置为 prevLogIndex 的前一个
-		appendEntryResp.Index = r.RaftLog.LastIndex() // 用于提示 leader prevLogIndex 的开始位置是appendEntryResp.Index
-		if prevLogIndex < r.RaftLog.LastIndex() {     //如果比leader还长
-			conflictTerm := r.RaftLog.TermNoErr(m.Index)
+		appendEntryResp.Index = r.RaftLog.LastIndex()
+		//appendEntryResp.Index = prevLogIndex - 1 // 用于提示 leader prevLogIndex 的开始位置是appendEntryResp.Index
+		if prevLogIndex <= r.RaftLog.LastIndex() {
+			conflictTerm := r.RaftLog.TermNoErr(prevLogIndex)
 			for _, ent := range r.RaftLog.entries {
 				if ent.Term == conflictTerm {
 					//找到冲突任期的上一个任期的idx位置
