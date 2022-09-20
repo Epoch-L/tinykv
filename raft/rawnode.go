@@ -28,6 +28,7 @@ var ErrStepLocalMsg = errors.New("raft: cannot step raft local message")
 var ErrStepPeerNotFound = errors.New("raft: cannot step as peer not found")
 
 // SoftState provides state that is volatile and does not need to be persisted to the WAL.
+// SoftState提供的状态是不稳定的，不需要持久化到WAL。
 type SoftState struct {
 	Lead      uint64
 	RaftState StateType
@@ -42,12 +43,15 @@ type Ready struct {
 	// The current volatile state of a Node.
 	// SoftState will be nil if there is no update.
 	// It is not required to consume or store SoftState.
-	// 需要被持久化，存粹用在HasReady()中做判断
+	// 不需要被持久化，存粹用在HasReady()中做判断
 	*SoftState
 
 	// The current state of a Node to be saved to stable storage BEFORE
 	// Messages are sent.
 	// HardState will be equal to empty state if there is no update.
+	//发送消息之前要保存到稳定存储器的节点的当前状态。
+	//如果没有更新，则HardState将等于空状态。
+	//HardState包含需要验证的节点的状态，包括当前term、提交索引和投票记录
 	pb.HardState
 
 	// Entries specifies entries to be saved to stable storage BEFORE
@@ -57,6 +61,7 @@ type Ready struct {
 	Entries []pb.Entry
 
 	// Snapshot specifies the snapshot to be saved to stable storage.
+	// 快照指定要保存到稳定存储的快照。
 	Snapshot pb.Snapshot
 
 	// CommittedEntries specifies entries to be committed to a
@@ -70,6 +75,7 @@ type Ready struct {
 	// committed to stable storage.
 	// If it contains a MessageType_MsgSnapshot message, the application MUST report back to raft
 	// when the snapshot has been received or has failed by calling ReportSnapshot.
+	// 如果它包含MessageType_MsgSnapshot消息，则当接收到快照或调用ReportSnapshop失败时，应用程序必须向raft报告。
 	// 在日志被写入到 Storage 之后需要发送的消息
 	// 待发送
 	Messages []pb.Message
@@ -166,9 +172,9 @@ func (rn *RawNode) Step(m pb.Message) error {
 func (rn *RawNode) Ready() Ready {
 	// Your Code Here (2A).
 	rd := Ready{
-		Messages:         rn.Raft.msgs,
-		Entries:          rn.Raft.RaftLog.unstableEntries(),
-		CommittedEntries: rn.Raft.RaftLog.nextEnts(),
+		Messages:         rn.Raft.msgs,                      //在日志被写入到 Storage 之后需要发送的Msg消息
+		Entries:          rn.Raft.RaftLog.unstableEntries(), //写入到 Storage 的日志进行持久化 【stabled+1，last】
+		CommittedEntries: rn.Raft.RaftLog.nextEnts(),        //待 apply (applied，committed] 之间的日志
 	}
 	if rn.isSoftStateUpdate() {
 		// 虽然 SoftState 不需要持久化，但是检测到 SoftState 更新的时候需要获取
@@ -187,7 +193,6 @@ func (rn *RawNode) Ready() Ready {
 	//if !IsEmptySnap(rn.Raft.RaftLog.pendingSnapshot) {
 	//	rd.Snapshot = *rn.Raft.RaftLog.pendingSnapshot
 	//}
-
 	return rd
 }
 
@@ -223,13 +228,14 @@ func (rn *RawNode) HasReady() bool {
 // Advance通知RawNode，应用程序已经应用并保存了最后一个Ready结果中的进度。
 func (rn *RawNode) Advance(rd Ready) {
 	// Your Code Here (2A).
-	// 不等于 nil 说明上次执行 Ready 更新了 softState
 	//prevHardSt 变更；
 	//stabled 指针变更；
 	//applied 指针变更；
 	//清空 rn.Raft.msgs；
 	//丢弃被压缩的暂存日志；
 	//清空 pendingSnapshot；
+
+	// 不等于 nil 说明上次执行 Ready 更新了 softState
 	if rd.SoftState != nil {
 		rn.prevSoftSt = rd.SoftState
 	}

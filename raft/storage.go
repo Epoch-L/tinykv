@@ -46,6 +46,7 @@ var ErrSnapshotTemporarilyUnavailable = errors.New("snapshot is temporarily unav
 // application is responsible for cleanup and recovery in this case.
 type Storage interface {
 	// InitialState returns the saved HardState and ConfState information.
+	//InitialState返回保存的HardState和ConfState信息。
 	InitialState() (pb.HardState, pb.ConfState, error)
 	// Entries returns a slice of log entries in the range [lo,hi).
 	// MaxSize limits the total size of the log entries returned, but

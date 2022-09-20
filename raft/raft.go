@@ -631,58 +631,64 @@ func (r *Raft) handleAppendEntries(m pb.Message) {
 	appendEntryResp.Reject = true
 
 	//1.
-	if m.Term >= r.Term {
-		r.becomeFollower(m.Term, m.From)
-		if r.RaftLog.LastIndex() < m.Index || r.RaftLog.TermNoErr(m.Index) != m.LogTerm {
-			//最后一条index和preLogIndex冲突、或者任期冲突
-			//这时不能直接将 leader 传递过来的 Entries 覆盖到 follower 日志上
-			//这里可以直接返回，以便让 leader 尝试 prevLogIndex - 1 这条日志
-			//但是这样 follower 和 leader 之间的同步比较慢
-			//TODO 日志冲突优化：
-			//	找到冲突任期的第一条日志，下次 leader 发送 AppendEntry 的时候会将 nextIndex 设置为 ConflictIndex
-			// 	如果找不到的话就设置为 prevLogIndex 的前一个
-			appendEntryResp.Index = r.RaftLog.LastIndex() // 用于提示 leader prevLogIndex 的开始位置
-			if r.RaftLog.LastIndex() >= m.Index {
-				conflictTerm := r.RaftLog.TermNoErr(m.Index)
-				for _, ent := range r.RaftLog.entries {
-					if ent.Term == conflictTerm {
-						//找到上一个任期的idx位置
-						appendEntryResp.Index = ent.Index - 1
-						break
-					}
+	if m.Term < r.Term {
+		r.msgs = append(r.msgs, appendEntryResp)
+		return
+	}
+	//2.
+	prevLogIndex := m.Index
+	prevLogTerm := m.LogTerm
+	r.becomeFollower(m.Term, m.From)
+	if prevLogIndex > r.RaftLog.LastIndex() || r.RaftLog.TermNoErr(prevLogIndex) != prevLogTerm {
+		//最后一条index和preLogIndex冲突、或者任期冲突
+		//这时不能直接将 leader 传递过来的 Entries 覆盖到 follower 日志上
+		//这里可以直接返回，以便让 leader 尝试 prevLogIndex - 1 这条日志
+		//但是这样 follower 和 leader 之间的同步比较慢
+		//TODO 日志冲突优化：
+		//	找到冲突任期的第一条日志，下次 leader 发送 AppendEntry 的时候会将 nextIndex 设置为 ConflictIndex
+		// 	如果找不到的话就设置为 prevLogIndex 的前一个
+		appendEntryResp.Index = r.RaftLog.LastIndex() // 用于提示 leader prevLogIndex 的开始位置是appendEntryResp.Index
+		if prevLogIndex < r.RaftLog.LastIndex() {     //如果比leader还长
+			conflictTerm := r.RaftLog.TermNoErr(m.Index)
+			for _, ent := range r.RaftLog.entries {
+				if ent.Term == conflictTerm {
+					//找到冲突任期的上一个任期的idx位置
+					appendEntryResp.Index = ent.Index - 1
+					break
 				}
 			}
-		} else {
-			//prevLogIndex没有冲突
-			if len(m.Entries) > 0 {
-				idx, newLogIndex := m.Index+1, m.Index+1
-				// 找到 follower 和 leader 在 new log 中出现冲突的位置
-				// 这里是在上面的if break之后再次发来的同步
-				for ; idx < r.RaftLog.LastIndex() && idx <= m.Entries[len(m.Entries)-1].Index; idx++ {
-					term, _ := r.RaftLog.Term(idx)
-					if term != m.Entries[idx-newLogIndex].Term {
-						break
-					}
-				}
-				//被break处理了，发现冲突
-				if idx-newLogIndex != uint64(len(m.Entries)) {
-					r.RaftLog.truncate(idx)                               // 截断冲突后面的所有日志
-					r.RaftLog.appendNewEntry(m.Entries[idx-newLogIndex:]) // 并追加新的的日志
-					r.RaftLog.stabled = min(r.RaftLog.stabled, idx-1)     // 更新持久化的日志索引
-				}
-			}
-			// 更新 commitIndex
-			if m.Commit > r.RaftLog.committed {
-				// 取当前节点「已经和 leader 同步的日志」和 leader 「已经提交日志」索引的最小值作为节点的 commitIndex
-				r.RaftLog.commit(min(m.Commit, m.Index+uint64(len(m.Entries))))
-			}
-			//同意
-			appendEntryResp.Reject = false
-			// 用于 leader 更新 NextIndex（存储的是下一次 AppendEntry 的 prevIndex）
-			appendEntryResp.Index = m.Index + uint64(len(m.Entries))
-			// 用于 leader 更新 committed
-			appendEntryResp.LogTerm = r.RaftLog.TermNoErr(appendEntryResp.Index)
 		}
+	} else {
+		//prevLogIndex没有冲突
+		if len(m.Entries) > 0 {
+			//3.
+			idx, newLogIndex := m.Index+1, m.Index+1
+			// 找到 follower 和 leader 在 new log 中出现冲突的位置
+			// 这里是在上面的if break之后再次发来的同步
+			for ; idx < r.RaftLog.LastIndex() && idx <= m.Entries[len(m.Entries)-1].Index; idx++ {
+				term, _ := r.RaftLog.Term(idx)
+				if term != m.Entries[idx-newLogIndex].Term {
+					break
+				}
+			}
+			//被break处理了，发现冲突append logs和已有日志冲突
+			if idx-newLogIndex != uint64(len(m.Entries)) {
+				r.RaftLog.truncate(idx)                               // 截断冲突后面的所有日志
+				r.RaftLog.appendNewEntry(m.Entries[idx-newLogIndex:]) // 并追加新的的日志
+				r.RaftLog.stabled = min(r.RaftLog.stabled, idx-1)     // 更新持久化的日志索引
+			}
+		}
+		// 更新 commitIndex
+		if m.Commit > r.RaftLog.committed {
+			// 取当前节点「已经和 leader 同步的日志」和 leader 「已经提交日志」索引的最小值作为节点的 commitIndex
+			r.RaftLog.commit(min(m.Commit, m.Index+uint64(len(m.Entries))))
+		}
+		//同意
+		appendEntryResp.Reject = false
+		// 用于 leader 更新 NextIndex（存储的是下一次 AppendEntry 的 prevIndex）
+		appendEntryResp.Index = m.Index + uint64(len(m.Entries))
+		// 用于 leader 更新 committed
+		appendEntryResp.LogTerm = r.RaftLog.TermNoErr(appendEntryResp.Index)
 	}
 	//回发
 	r.msgs = append(r.msgs, appendEntryResp)
