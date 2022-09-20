@@ -314,7 +314,6 @@ func (r *Raft) followerTick() {
 // becomeFollower transform this peer's state to Follower
 func (r *Raft) becomeFollower(term uint64, lead uint64) {
 	// Your Code Here (2A).
-	// 领导者应在其任期内提出noop条目
 
 	if term > r.Term {
 		// 只有 Term > currentTerm 的时候才需要对 Vote 进行重置

@@ -156,6 +156,7 @@ func (rn *RawNode) ApplyConfChange(cc pb.ConfChange) *pb.ConfState {
 }
 
 // Step advances the state machine using the given message.
+//步骤使用给定消息推进状态机。
 func (rn *RawNode) Step(m pb.Message) error {
 	// ignore unexpected local messages receiving over network
 	if IsLocalMsg(m.MsgType) {
@@ -209,18 +210,13 @@ func (rn *RawNode) isHardStateUpdate() bool {
 
 // HasReady called when RawNode user need to check if any Ready pending.
 //判断 Raft 模块是否已经有同步完成并且需要上层处理的信息
-//是否有需要持久化的状态
-//是否有需要持久化的条目
-//是否有需要应用的快照
-//是否有需要应用的条目
-//是否有需要发送的 Msg
 func (rn *RawNode) HasReady() bool {
 	// Your Code Here (2A).
-	return len(rn.Raft.msgs) > 0 ||
-		rn.isHardStateUpdate() ||
-		len(rn.Raft.RaftLog.unstableEntries()) > 0 ||
-		len(rn.Raft.RaftLog.nextEnts()) > 0 ||
-		!IsEmptySnap(rn.Raft.RaftLog.pendingSnapshot)
+	return len(rn.Raft.msgs) > 0 || //是否有需要发送的 Msg
+		rn.isHardStateUpdate() || //是否有需要持久化的状态
+		len(rn.Raft.RaftLog.unstableEntries()) > 0 || //是否有需要应用的条目
+		len(rn.Raft.RaftLog.nextEnts()) > 0 || //是否有需要持久化的条目
+		!IsEmptySnap(rn.Raft.RaftLog.pendingSnapshot) //是否有需要应用的快照
 }
 
 // Advance notifies the RawNode that the application has applied and saved progress in the
@@ -228,12 +224,6 @@ func (rn *RawNode) HasReady() bool {
 // Advance通知RawNode，应用程序已经应用并保存了最后一个Ready结果中的进度。
 func (rn *RawNode) Advance(rd Ready) {
 	// Your Code Here (2A).
-	//prevHardSt 变更；
-	//stabled 指针变更；
-	//applied 指针变更；
-	//清空 rn.Raft.msgs；
-	//丢弃被压缩的暂存日志；
-	//清空 pendingSnapshot；
 
 	// 不等于 nil 说明上次执行 Ready 更新了 softState
 	if rd.SoftState != nil {
@@ -241,18 +231,18 @@ func (rn *RawNode) Advance(rd Ready) {
 	}
 	// 检查 HardState 是否是默认值，默认值说明没有更新，此时不应该更新 prevHardSt
 	if !IsEmptyHardState(rd.HardState) {
-		rn.prevHardSt = rd.HardState
+		rn.prevHardSt = rd.HardState //prevHardSt 变更；
 	}
 	// 更新 RaftLog 状态
 	if len(rd.Entries) > 0 {
-		rn.Raft.RaftLog.stabled += uint64(len(rd.Entries))
+		rn.Raft.RaftLog.stabled += uint64(len(rd.Entries)) //stabled 指针变更；
 	}
 	if len(rd.CommittedEntries) > 0 {
-		rn.Raft.RaftLog.applied += uint64(len(rd.CommittedEntries))
+		rn.Raft.RaftLog.applied += uint64(len(rd.CommittedEntries)) //applied 指针变更；
 	}
-	rn.Raft.RaftLog.maybeCompact()
-	rn.Raft.RaftLog.pendingSnapshot = nil
-	rn.Raft.msgs = nil
+	rn.Raft.RaftLog.maybeCompact()        //丢弃被压缩的暂存日志；
+	rn.Raft.RaftLog.pendingSnapshot = nil //清空 pendingSnapshot；
+	rn.Raft.msgs = nil                    //清空 rn.Raft.msgs；
 }
 
 // GetProgress return the Progress of this node and its peers, if this
