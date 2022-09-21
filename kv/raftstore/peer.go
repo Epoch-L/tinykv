@@ -38,7 +38,6 @@ func createPeer(storeID uint64, cfg *config.Config, sched chan<- worker.Task,
 	if metaPeer == nil {
 		return nil, errors.Errorf("find no peer for store %d in region %v", storeID, region)
 	}
-	log.Infof("region %v create peer with ID %d", region, metaPeer.Id)
 	return NewPeer(storeID, cfg, engines, region, sched, metaPeer)
 }
 
@@ -83,6 +82,7 @@ type peer struct {
 
 	// Record the callback of the proposals
 	// (Used in 2B)
+	// 记录回调
 	proposals []*proposal
 
 	// Index of last scheduled compacted raft log.

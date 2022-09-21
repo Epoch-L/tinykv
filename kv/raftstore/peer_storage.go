@@ -327,11 +327,37 @@ func (ps *PeerStorage) ApplySnapshot(snapshot *eraftpb.Snapshot, kvWB *engine_ut
 }
 
 // Save memory states to disk.
+//将内存状态保存到磁盘。
 // Do not modify ready in this function, this is a requirement to advance the ready object properly later.
+//不要在此函数中修改ready，这是稍后正确推进ready对象的要求。
+// 处理 Ready 中的 Entries 和 HardState 数据
 func (ps *PeerStorage) SaveReadyState(ready *raft.Ready) (*ApplySnapResult, error) {
 	// Hint: you may call `Append()` and `ApplySnapshot()` in this function
 	// Your Code Here (2B/2C).
-	return nil, nil
+	raftWB := &engine_util.WriteBatch{}
+	var result *ApplySnapResult
+	var err error
+	// 1. 应用快照数据
+	if !raft.IsEmptySnap(&ready.Snapshot) {
+		kvWB := &engine_util.WriteBatch{}
+		result, err = ps.ApplySnapshot(&ready.Snapshot, kvWB, raftWB)
+		kvWB.MustWriteToDB(ps.Engines.Kv)
+	}
+	// 2. 持久化新追加的日志（这里会更新到 RaftLocalState）
+	if err = ps.Append(ready.Entries, raftWB); err != nil {
+		log.Panic(err)
+	}
+	// 3. 更新 RaftLocalState::HardState（persist data）
+	if !raft.IsEmptyHardState(ready.HardState) {
+		*ps.raftState.HardState = ready.HardState
+	}
+	// 4. 将 RaftLocalState 写到存储引擎
+	if err = raftWB.SetMeta(meta.RaftStateKey(ps.region.Id), ps.raftState); err != nil {
+		log.Panic(err)
+	}
+	// 5. 原子的写入到存储引擎中
+	raftWB.MustWriteToDB(ps.Engines.Raft)
+	return result, nil
 }
 
 func (ps *PeerStorage) ClearData() {
