@@ -44,6 +44,7 @@ type Ready struct {
 	// SoftState will be nil if there is no update.
 	// It is not required to consume or store SoftState.
 	// 不需要被持久化，存粹用在HasReady()中做判断
+	// 现在的leader和自身是什么身份，是易变的，所以是软状态
 	*SoftState
 
 	// The current state of a Node to be saved to stable storage BEFORE
@@ -181,7 +182,7 @@ func (rn *RawNode) Ready() Ready {
 		// 虽然 SoftState 不需要持久化，但是检测到 SoftState 更新的时候需要获取
 		// 测试用例会用到（单纯的从 Raft 角度分析的话，这部分数据没有获取的必要）
 		rd.SoftState = &SoftState{Lead: rn.Raft.Lead, RaftState: rn.Raft.State}
-		rn.prevSoftSt = rd.SoftState
+		//rn.prevSoftSt = rd.SoftState
 	}
 	if rn.isHardStateUpdate() {
 		rd.HardState = pb.HardState{
