@@ -54,6 +54,8 @@ type RaftLog struct {
 
 	// the incoming unstable snapshot, if any.
 	// (Used in 2C)
+	//收到 leader 的快照的时候，会将快照保存在此处，后续会把快照保存到 Ready 中去
+	//上层应用会应用 Ready 里面的快照
 	pendingSnapshot *pb.Snapshot
 
 	// Your Data Here (2A).
@@ -74,14 +76,12 @@ func newLog(storage Storage) *RaftLog {
 	hardState, _, _ := storage.InitialState()
 
 	rl := &RaftLog{
-		storage:   storage,
-		committed: hardState.Commit,
-		applied:   firstIndex - 1,
-		stabled:   lastIndex,
-		entries:   entries,
-		//2C
-		pendingSnapshot: nil,
-		dummyIndex:      firstIndex,
+		storage:    storage,
+		committed:  hardState.Commit,
+		applied:    firstIndex - 1,
+		stabled:    lastIndex,
+		entries:    entries,
+		dummyIndex: firstIndex,
 	}
 
 	return rl
@@ -94,6 +94,11 @@ func newLog(storage Storage) *RaftLog {
 //存储压缩稳定日志条目阻止日志条目在记忆中无限增长
 func (l *RaftLog) maybeCompact() {
 	// Your Code Here (2C).
+	newFirst, _ := l.storage.FirstIndex()
+	if newFirst > l.dummyIndex {
+		l.entries = l.entries[newFirst-l.dummyIndex:]
+	}
+	l.dummyIndex = newFirst
 }
 
 // allEntries return all the entries not compacted.
@@ -157,12 +162,15 @@ func (l *RaftLog) Term(i uint64) (uint64, error) {
 	// Your Code Here (2A).
 	if i >= l.dummyIndex {
 		return l.entries[i-l.dummyIndex].Term, nil
-	} else {
-		// 3. 否则的话 i 只能是快照中的日志
-		term, err := l.storage.Term(i)
-		return term, err
 	}
-	//2C
+	// 2. 判断 i 是否等于当前正准备安装的快照的最后一条日志
+	if !IsEmptySnap(l.pendingSnapshot) && i == l.pendingSnapshot.Metadata.Index {
+		return l.pendingSnapshot.Metadata.Term, nil
+	}
+
+	// 3. 否则的话 i 只能是快照中的日志
+	term, err := l.storage.Term(i)
+	return term, err
 }
 
 // LastTerm 返回最后一条日志的索引

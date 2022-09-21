@@ -191,10 +191,10 @@ func (rn *RawNode) Ready() Ready {
 			Commit: rn.Raft.RaftLog.committed,
 		}
 	}
-	//3A
-	//if !IsEmptySnap(rn.Raft.RaftLog.pendingSnapshot) {
-	//	rd.Snapshot = *rn.Raft.RaftLog.pendingSnapshot
-	//}
+	// 引用快照
+	if !IsEmptySnap(rn.Raft.RaftLog.pendingSnapshot) {
+		rd.Snapshot = *rn.Raft.RaftLog.pendingSnapshot
+	}
 	return rd
 }
 

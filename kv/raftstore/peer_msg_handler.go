@@ -43,9 +43,9 @@ func newPeerMsgHandler(peer *peer, ctx *GlobalContext) *peerMsgHandler {
 }
 
 // HandleRaftReady 处理 rawNode 传递来的 Ready
-//HandleRaftReady 对这些 entries 进行 apply（即执行底层读写命令）
-//每执行完一次 apply，都需要对 proposals 中的相应 Index 的 proposal 进行 callback 回应（调用 cb.Done()）
-//然后从中删除这个 proposal。
+// HandleRaftReady 对这些 entries 进行 apply（即执行底层读写命令）
+// 每执行完一次 apply，都需要对 proposals 中的相应 Index 的 proposal 进行 callback 回应（调用 cb.Done()）
+// 然后从中删除这个 proposal。
 func (d *peerMsgHandler) HandleRaftReady() {
 	if d.stopped {
 		return
