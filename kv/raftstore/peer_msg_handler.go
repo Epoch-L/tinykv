@@ -5,7 +5,6 @@ import (
 	"github.com/pingcap-incubator/tinykv/kv/raftstore/meta"
 	"github.com/pingcap-incubator/tinykv/kv/util/engine_util"
 	pb "github.com/pingcap-incubator/tinykv/proto/pkg/eraftpb"
-	"reflect"
 	"time"
 
 	"github.com/Connor1996/badger/y"
@@ -60,21 +59,21 @@ func (d *peerMsgHandler) HandleRaftReady() {
 	//2. 调用 SaveReadyState 将 Ready 中需要持久化的内容保存到 badger。
 	//如果 Ready 中存在 snapshot，则应用它；
 	//保存 unstable entries, hard state, snapshot
-	applySnapResult, err := d.peerStorage.SaveReadyState(&ready)
+	_, err := d.peerStorage.SaveReadyState(&ready)
 	if err != nil {
 		log.Panic(err)
 	}
-	if applySnapResult != nil {
-		if !reflect.DeepEqual(applySnapResult.PrevRegion, applySnapResult.Region) {
-			d.peerStorage.SetRegion(applySnapResult.Region)
-			storeMeta := d.ctx.storeMeta
-			storeMeta.Lock()
-			storeMeta.regions[applySnapResult.Region.Id] = applySnapResult.Region
-			storeMeta.regionRanges.Delete(&regionItem{applySnapResult.PrevRegion})
-			storeMeta.regionRanges.ReplaceOrInsert(&regionItem{applySnapResult.Region})
-			storeMeta.Unlock()
-		}
-	}
+	//if applySnapResult != nil {
+	//	if !reflect.DeepEqual(applySnapResult.PrevRegion, applySnapResult.Region) {
+	//		d.peerStorage.SetRegion(applySnapResult.Region)
+	//		storeMeta := d.ctx.storeMeta
+	//		storeMeta.Lock()
+	//		storeMeta.regions[applySnapResult.Region.Id] = applySnapResult.Region
+	//		storeMeta.regionRanges.Delete(&regionItem{applySnapResult.PrevRegion})
+	//		storeMeta.regionRanges.ReplaceOrInsert(&regionItem{applySnapResult.Region})
+	//		storeMeta.Unlock()
+	//	}
+	//}
 	//3. 调用 d.Send() 方法将 Ready 中的 Msg 发送出去；
 	d.Send(d.ctx.trans, ready.Messages)
 
