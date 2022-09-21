@@ -55,6 +55,7 @@ func (d *peerMsgHandler) HandleRaftReady() {
 	if !d.RaftGroup.HasReady() {
 		return
 	}
+
 	ready := d.RaftGroup.Ready()
 	//2. 调用 SaveReadyState 将 Ready 中需要持久化的内容保存到 badger。
 	//如果 Ready 中存在 snapshot，则应用它；
@@ -76,8 +77,11 @@ func (d *peerMsgHandler) HandleRaftReady() {
 	}
 	//3. 调用 d.Send() 方法将 Ready 中的 Msg 发送出去；
 	d.Send(d.ctx.trans, ready.Messages)
+
 	//4. 应用待apply的日志，即实际去执行
+
 	if len(ready.CommittedEntries) > 0 {
+
 		kvWB := &engine_util.WriteBatch{}
 		for _, ent := range ready.CommittedEntries {
 			kvWB = d.processCommittedEntry(&ent, kvWB)
@@ -106,6 +110,7 @@ func (d *peerMsgHandler) processCommittedEntry(entry *pb.Entry, kvWB *engine_uti
 		if err := cc.Unmarshal(entry.Data); err != nil {
 			log.Panic(err)
 		}
+		log.Infof("EntryType_EntryConfChange")
 		return d.processConfChange(entry, cc, kvWB)
 	}
 	requests := &raft_cmdpb.RaftCmdRequest{} // 解析 entry.Data 中的数据
