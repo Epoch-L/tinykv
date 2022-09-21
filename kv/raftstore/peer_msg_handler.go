@@ -42,7 +42,10 @@ func newPeerMsgHandler(peer *peer, ctx *GlobalContext) *peerMsgHandler {
 	}
 }
 
-//处理 rawNode 传递来的 Ready
+// HandleRaftReady 处理 rawNode 传递来的 Ready
+//HandleRaftReady 对这些 entries 进行 apply（即执行底层读写命令）
+//每执行完一次 apply，都需要对 proposals 中的相应 Index 的 proposal 进行 callback 回应（调用 cb.Done()）
+//然后从中删除这个 proposal。
 func (d *peerMsgHandler) HandleRaftReady() {
 	if d.stopped {
 		return
@@ -53,7 +56,7 @@ func (d *peerMsgHandler) HandleRaftReady() {
 		return
 	}
 	ready := d.RaftGroup.Ready()
-	//调用 SaveReadyState 将 Ready 中需要持久化的内容保存到 badger。
+	//2. 调用 SaveReadyState 将 Ready 中需要持久化的内容保存到 badger。
 	//如果 Ready 中存在 snapshot，则应用它；
 	//保存 unstable entries, hard state, snapshot
 	applySnapResult, err := d.peerStorage.SaveReadyState(&ready)
@@ -71,9 +74,9 @@ func (d *peerMsgHandler) HandleRaftReady() {
 			storeMeta.Unlock()
 		}
 	}
-	//调用 d.Send() 方法将 Ready 中的 Msg 发送出去；
+	//3. 调用 d.Send() 方法将 Ready 中的 Msg 发送出去；
 	d.Send(d.ctx.trans, ready.Messages)
-	//应用待apply的日志
+	//4. 应用待apply的日志，即实际去执行
 	if len(ready.CommittedEntries) > 0 {
 		kvWB := &engine_util.WriteBatch{}
 		for _, ent := range ready.CommittedEntries {
@@ -93,18 +96,18 @@ func (d *peerMsgHandler) HandleRaftReady() {
 		// 在这里一次性执行所有的 Command 操作和 ApplyState 更新操作
 		kvWB.MustWriteToDB(d.peerStorage.Engines.Kv)
 	}
-	//调用 d.RaftGroup.Advance() 推进 RawNode,更新 raft 状态
+	//5. 调用 d.RaftGroup.Advance() 推进 RawNode,更新 raft 状态
 	d.RaftGroup.Advance(ready)
 }
 func (d *peerMsgHandler) processCommittedEntry(entry *pb.Entry, kvWB *engine_util.WriteBatch) *engine_util.WriteBatch {
 	// 检查日志是否是配置变更日志
-	//if entry.EntryType == pb.EntryType_EntryConfChange {
-	//	cc := &pb.ConfChange{}
-	//	if err := cc.Unmarshal(entry.Data); err != nil {
-	//		log.Panic(err)
-	//	}
-	//	return d.processConfChange(entry, cc, kvWB)
-	//}
+	if entry.EntryType == pb.EntryType_EntryConfChange {
+		cc := &pb.ConfChange{}
+		if err := cc.Unmarshal(entry.Data); err != nil {
+			log.Panic(err)
+		}
+		return d.processConfChange(entry, cc, kvWB)
+	}
 	requests := &raft_cmdpb.RaftCmdRequest{} // 解析 entry.Data 中的数据
 	if err := requests.Unmarshal(entry.Data); err != nil {
 		log.Panic(err)
@@ -118,6 +121,96 @@ func (d *peerMsgHandler) processCommittedEntry(entry *pb.Entry, kvWB *engine_uti
 	return nil
 }
 
+//////////////////////////////////////////////////////
+// processConfChange 处理配置变更日志
+func (d *peerMsgHandler) processConfChange(entry *pb.Entry, cc *pb.ConfChange, kvWB *engine_util.WriteBatch) *engine_util.WriteBatch {
+	// 获取 ConfChange Command Request
+	msg := &raft_cmdpb.RaftCmdRequest{}
+	if err := msg.Unmarshal(cc.Context); err != nil {
+		log.Panic(err)
+	}
+	region := d.Region()
+	changePeerReq := msg.AdminRequest.ChangePeer
+	// 检查 Command Request 中的 RegionEpoch 是否是过期的，以此判定是不是一个重复的请求
+	// 实验指导书中提到，测试程序可能会多次提交同一个 ConfChange 直到 ConfChange 被应用
+	// CheckRegionEpoch 检查 RaftCmdRequest 头部携带的 RegionEpoch 是不是和 currentRegionEpoch 匹配
+	if err, ok := util.CheckRegionEpoch(msg, region, true).(*util.ErrEpochNotMatch); ok {
+		log.Infof("[processConfChange] %v RegionEpoch not match", d.PeerId())
+		d.handleProposal(entry, ErrResp(err))
+		return kvWB
+	}
+	switch cc.ChangeType {
+	case pb.ConfChangeType_AddNode: // 添加一个节点
+		log.Infof("[AddNode] %v add %v", d.PeerId(), cc.NodeId)
+		// 待添加的节点必须原先在 Region 中不存在
+		if d.searchPeerWithId(cc.NodeId) == len(region.Peers) {
+			// region 中追加新的 peer
+			region.Peers = append(region.Peers, changePeerReq.Peer)
+			region.RegionEpoch.ConfVer++
+			meta.WriteRegionState(kvWB, region, rspb.PeerState_Normal) // PeerState 用来表示当前 Peer 是否在 region 中
+			// 更新 metaStore 中的 region 信息
+			d.updateStoreMeta(region)
+			// 更新 peerCache，peerCache 保存了 peerId -> Peer 的映射
+			// 当前 raft_store 上的 peer 需要发送消息给同一个 region 中的别的节点的时候，需要获取别的节点所在 storeId
+			// peerCache 里面就保存了属于同一个 region 的所有 peer 的元信息（peerId, storeId）
+			d.insertPeerCache(changePeerReq.Peer)
+		}
+	case pb.ConfChangeType_RemoveNode: // 删除一个节点
+		log.Infof("[RemoveNode] %v remove %v", d.PeerId(), cc.NodeId)
+		// 如果目标节点是自身，那么直接销毁并返回：从 raft_store 上删除所属 region 的所有信息
+		if cc.NodeId == d.PeerId() {
+			d.destroyPeer()
+			log.Infof("[RemoveNode] destory %v compeleted", cc.NodeId)
+			return kvWB
+		}
+		// 待删除的节点必须存在于 region 中
+		n := d.searchPeerWithId(cc.NodeId)
+		if n != len(region.Peers) {
+			// 删除节点 RaftGroup 中的第 n 个 peer（注意，这里并不是编号为 n 的 peer，而是第 n 个 peer）
+			region.Peers = append(region.Peers[:n], region.Peers[n+1:]...)
+			region.RegionEpoch.ConfVer++
+			meta.WriteRegionState(kvWB, region, rspb.PeerState_Normal) // PeerState 用来表示当前 Peer 是否在 region 中
+			// 更新 metaStore 中的 region 信息
+			d.updateStoreMeta(region)
+			// 更新 peerCache
+			d.removePeerCache(cc.NodeId)
+		}
+	}
+	// 更新 raft 层的配置信息
+	d.RaftGroup.ApplyConfChange(*cc)
+	// 处理 proposal
+	d.handleProposal(entry, &raft_cmdpb.RaftCmdResponse{
+		Header: &raft_cmdpb.RaftResponseHeader{},
+		AdminResponse: &raft_cmdpb.AdminResponse{
+			CmdType:    raft_cmdpb.AdminCmdType_ChangePeer,
+			ChangePeer: &raft_cmdpb.ChangePeerResponse{Region: region},
+		},
+	})
+	// 新增加的 peer 是通过 leader 的心跳完成的
+	if d.IsLeader() {
+		d.HeartbeatScheduler(d.ctx.schedulerTaskSender)
+	}
+	return kvWB
+}
+
+func (d *peerMsgHandler) updateStoreMeta(region *metapb.Region) {
+	storeMeta := d.ctx.storeMeta
+	storeMeta.Lock()
+	storeMeta.regions[region.Id] = region
+	storeMeta.Unlock()
+}
+
+// searchPeerWithId 根据需要添加或者删除的 Peer id，找到 region 中是否已经存在这个 Peer
+func (d *peerMsgHandler) searchPeerWithId(nodeId uint64) int {
+	for id, peer := range d.peerStorage.region.Peers {
+		if peer.Id == nodeId {
+			return id
+		}
+	}
+	return len(d.peerStorage.region.Peers)
+}
+
+//////////////////////
 // processRequest 处理 commit 的 Put/Get/Delete/Snap 类型 command
 func (d *peerMsgHandler) processRequest(entry *pb.Entry, requests *raft_cmdpb.RaftCmdRequest, kvWB *engine_util.WriteBatch) *engine_util.WriteBatch {
 
@@ -283,21 +376,24 @@ func (d *peerMsgHandler) proposeRaftCommand(msg *raft_cmdpb.RaftCmdRequest, cb *
 	if msg.Requests != nil {
 		d.proposeRequest(msg, cb)
 	} else {
+		//暂时不管
 		//d.proposeAdminRequest(msg, cb)
 	}
 }
 func (d *peerMsgHandler) proposeRequest(msg *raft_cmdpb.RaftCmdRequest, cb *message.Callback) {
-	//封装回调，等待log被apply的时候调用
+	//1. 封装回调，等待log被apply的时候调用
+	//后续相应的 entry 执行完毕后，响应该 proposal，即 callback.Done( )；
 	d.proposals = append(d.proposals, &proposal{
 		index: d.RaftGroup.Raft.RaftLog.LastIndex() + 1,
 		term:  d.RaftGroup.Raft.Term,
 		cb:    cb,
 	})
-	//序列化RaftCmdRequest
+	//2. 序列化RaftCmdRequest
 	data, err := msg.Marshal()
 	if err != nil {
 		log.Panic(err)
 	}
+	//3. 将该字节流包装成 entry 传递给下层raft MessageType_MsgPropose
 	err = d.RaftGroup.Propose(data)
 	if err != nil {
 		log.Panic(err)

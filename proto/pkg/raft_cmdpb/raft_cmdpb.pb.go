@@ -1329,6 +1329,7 @@ type RaftCmdRequest struct {
 	Header *RaftRequestHeader `protobuf:"bytes,1,opt,name=header" json:"header,omitempty"`
 	// We can't enclose normal requests and administrator request
 	// at same time.
+	//我们不能同时包含普通请求和管理员请求。
 	Requests             []*Request    `protobuf:"bytes,2,rep,name=requests" json:"requests,omitempty"`
 	AdminRequest         *AdminRequest `protobuf:"bytes,3,opt,name=admin_request,json=adminRequest" json:"admin_request,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`

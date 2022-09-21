@@ -157,6 +157,7 @@ func (m *RaftMessage) GetEndKey() []byte {
 }
 
 // Used to store the persistent state for Raft, including the hard state for raft and the last index of the raft log.
+//用于存储当前 Raft hard state 和 Last Log Index。
 type RaftLocalState struct {
 	HardState            *eraftpb.HardState `protobuf:"bytes,1,opt,name=hard_state,json=hardState" json:"hard_state,omitempty"`
 	LastIndex            uint64             `protobuf:"varint,2,opt,name=last_index,json=lastIndex,proto3" json:"last_index,omitempty"`
@@ -221,6 +222,7 @@ func (m *RaftLocalState) GetLastTerm() uint64 {
 }
 
 // Used to store the persistent state for Raft state machine.
+//用于存储 Raft applied 的 Last Log Index 和一些 truncated Log 信息。
 type RaftApplyState struct {
 	// Record the applied index of the state machine to make sure
 	// not apply any index twice after restart.
@@ -336,6 +338,8 @@ func (m *RaftTruncatedState) GetTerm() uint64 {
 }
 
 // Used to store Region information and the corresponding Peer state on this Store.
+//用于存储 Region 信息和该 Store 上的 Peer State。
+//Normal表示该 peer 是正常的，Tombstone表示该 peer 已从 Region 中移除，不能加入Raft 组。
 type RegionLocalState struct {
 	State                PeerState      `protobuf:"varint,1,opt,name=state,proto3,enum=raft_serverpb.PeerState" json:"state,omitempty"`
 	Region               *metapb.Region `protobuf:"bytes,2,opt,name=region" json:"region,omitempty"`
