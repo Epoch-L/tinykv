@@ -111,6 +111,9 @@ func (l *RaftLog) allEntries() []pb.Entry {
 // 返回所有未持久化到 storage 的日志
 func (l *RaftLog) unstableEntries() []pb.Entry {
 	// Your Code Here (2A).
+	if l.LastIndex()-l.stabled == 0 {
+		return make([]pb.Entry, 0)
+	}
 	return l.getEntries(l.stabled+1, 0)
 }
 
@@ -135,7 +138,10 @@ func (l *RaftLog) nextEnts() (ents []pb.Entry) {
 	//diff = dummyIndex - 1 =5
 
 	diff := l.dummyIndex - 1
-	return l.entries[l.applied-diff : l.committed-diff]
+	if l.committed > l.applied {
+		return l.entries[l.applied-diff : l.committed-diff]
+	}
+	return make([]pb.Entry, 0)
 }
 
 // LastIndex return the last index of the log entries
@@ -174,11 +180,17 @@ func (l *RaftLog) isUpToDate(index, term uint64) bool {
 }
 
 func (l *RaftLog) TermNoErr(i uint64) uint64 {
+	//1.
 	if i >= l.dummyIndex {
 		return l.entries[i-l.dummyIndex].Term
 	}
-	//2C
-	return 0
+	//2.
+	if !IsEmptySnap(l.pendingSnapshot) && i == l.pendingSnapshot.Metadata.Index {
+		return l.pendingSnapshot.Metadata.Term
+	}
+	//3.debug here
+	term, _ := l.storage.Term(i)
+	return term
 }
 
 func (l *RaftLog) truncate(startIndex uint64) {
