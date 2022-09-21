@@ -306,8 +306,27 @@ func ClearMeta(engines *engine_util.Engines, kvWB, raftWB *engine_util.WriteBatc
 
 // Append the given entries to the raft log and update ps.raftState also delete log entries that will
 // never be committed
+///将给定的条目附加到raft日志并更新ps.raftState，同时删除永远不会提交的日志条目
 func (ps *PeerStorage) Append(entries []eraftpb.Entry, raftWB *engine_util.WriteBatch) error {
 	// Your Code Here (2B).
+	if len(entries) == 0 {
+		return nil
+	}
+	// 将所有的 Entry 都添加到 WriteBatch 中
+	for _, ent := range entries {
+		if err := raftWB.SetMeta(meta.RaftLogKey(ps.region.Id, ent.Index), &ent); err != nil {
+			log.Panic(err)
+		}
+	}
+	// 由于已经持久化的日志可能会因为冲突而被 leader 覆盖掉，对于这部分数据也需要在存储引擎中删除
+	// ......stabled -> ......truncated......currLastIndex......stabled
+	// 对于 [truncated, stabled] 中的日志本应该全都删除，但是 [truncated, currLastIndex] 中的数据只需要修改就可以了
+	currLastTerm, currLastIndex := entries[len(entries)-1].Term, entries[len(entries)-1].Index
+	prevLastIndex, _ := ps.LastIndex() // prevLastIndex 对应 RaftLog 中的 stabled
+	for index := currLastIndex + 1; index <= prevLastIndex; index++ {
+		raftWB.DeleteMeta(meta.RaftLogKey(ps.region.Id, index))
+	}
+	ps.raftState.LastTerm, ps.raftState.LastIndex = currLastTerm, currLastIndex // 更新 RaftLocalState
 	return nil
 }
 
