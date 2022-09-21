@@ -360,11 +360,11 @@ func (ps *PeerStorage) SaveReadyState(ready *raft.Ready) (*ApplySnapResult, erro
 	var result *ApplySnapResult
 	var err error
 	// 1. 通过 raft.isEmptySnap() 方法判断是否存在 Snapshot，如果有，则调用ApplySnapshot() 方法应用；
-	if !raft.IsEmptySnap(&ready.Snapshot) {
-		kvWB := &engine_util.WriteBatch{}
-		result, err = ps.ApplySnapshot(&ready.Snapshot, kvWB, raftWB)
-		kvWB.MustWriteToDB(ps.Engines.Kv)
-	}
+	//if !raft.IsEmptySnap(&ready.Snapshot) {
+	//	kvWB := &engine_util.WriteBatch{}
+	//	result, err = ps.ApplySnapshot(&ready.Snapshot, kvWB, raftWB)
+	//	kvWB.MustWriteToDB(ps.Engines.Kv)
+	//}
 	// 2. 调用 Append() 将需要持久化的 entries 保存到 raftDB；
 	if err = ps.Append(ready.Entries, raftWB); err != nil {
 		log.Panic(err)
