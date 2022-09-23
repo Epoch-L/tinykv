@@ -821,10 +821,10 @@ func (r *Raft) handleSnapshot(m pb.Message) {
 		r.RaftLog.pendingSnapshot = m.Snapshot
 		r.RaftLog.entries = make([]pb.Entry, 0)
 		// 更新集群配置
-		r.Prs = make(map[uint64]*Progress)
-		for _, id := range meta.ConfState.Nodes {
-			r.Prs[id] = &Progress{Next: r.RaftLog.LastIndex() + 1}
-		}
+		//r.Prs = make(map[uint64]*Progress)
+		//for _, id := range meta.ConfState.Nodes {
+		//	r.Prs[id] = &Progress{Next: r.RaftLog.LastIndex() + 1}
+		//}
 		// 更新 response，提示 leader 更新 nextIndex
 		resp.Index = meta.Index
 	}
