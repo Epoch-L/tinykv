@@ -117,11 +117,28 @@ func (d *peerMsgHandler) processCommittedEntry(entry *pb.Entry, kvWB *engine_uti
 	}
 	// 判断是 AdminRequest 还是普通的 Request
 	if requests.AdminRequest != nil {
-		//return d.processAdminRequest(entry, requests, kvWB)
+		return d.processAdminRequest(entry, requests, kvWB)
 	} else {
 		return d.processRequest(entry, requests, kvWB)
 	}
 	return nil
+}
+
+// processAdminRequest 处理 commit 的 Admin Request 类型 command
+func (d *peerMsgHandler) processAdminRequest(entry *pb.Entry, requests *raft_cmdpb.RaftCmdRequest, kvWB *engine_util.WriteBatch) *engine_util.WriteBatch {
+	adminReq := requests.AdminRequest
+	switch adminReq.CmdType {
+	case raft_cmdpb.AdminCmdType_CompactLog: // CompactLog 类型请求不需要将执行结果存储到 proposal 回调
+		// 记录最后一条被截断的日志（快照中的最后一条日志）的索引和任期
+		if adminReq.CompactLog.CompactIndex > d.peerStorage.applyState.TruncatedState.Index {
+			truncatedState := d.peerStorage.applyState.TruncatedState
+			truncatedState.Index, truncatedState.Term = adminReq.CompactLog.CompactIndex, adminReq.CompactLog.CompactTerm
+			// 调度日志截断任务到 raftlog-gc worker
+			d.ScheduleCompactLog(adminReq.CompactLog.CompactIndex)
+			log.Infof("%d apply commit, entry %v, type %s, truncatedIndex %v", d.peer.PeerId(), entry.Index, adminReq.CmdType, adminReq.CompactLog.CompactIndex)
+		}
+	}
+	return kvWB
 }
 
 // processRequest 处理 commit 的 Put/Get/Delete/Snap 类型 command
@@ -290,9 +307,23 @@ func (d *peerMsgHandler) proposeRaftCommand(msg *raft_cmdpb.RaftCmdRequest, cb *
 		d.proposeRequest(msg, cb)
 	} else {
 		//暂时不管
-		//d.proposeAdminRequest(msg, cb)
+		d.proposeAdminRequest(msg, cb)
 	}
 }
+
+func (d *peerMsgHandler) proposeAdminRequest(msg *raft_cmdpb.RaftCmdRequest, cb *message.Callback) {
+	switch msg.AdminRequest.CmdType {
+	case raft_cmdpb.AdminCmdType_CompactLog: // 日志压缩需要提交到 raft 同步
+		data, err := msg.Marshal()
+		if err != nil {
+			log.Panic(err)
+		}
+		if err := d.RaftGroup.Propose(data); err != nil {
+			log.Panic(err)
+		}
+	}
+}
+
 func (d *peerMsgHandler) proposeRequest(msg *raft_cmdpb.RaftCmdRequest, cb *message.Callback) {
 	//1. 封装回调，等待log被apply的时候调用
 	//后续相应的 entry 执行完毕后，响应该 proposal，即 callback.Done( )；
