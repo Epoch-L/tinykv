@@ -5,6 +5,7 @@ import (
 	"github.com/pingcap-incubator/tinykv/kv/raftstore/meta"
 	"github.com/pingcap-incubator/tinykv/kv/util/engine_util"
 	pb "github.com/pingcap-incubator/tinykv/proto/pkg/eraftpb"
+	"reflect"
 	"time"
 
 	"github.com/Connor1996/badger/y"
@@ -59,21 +60,21 @@ func (d *peerMsgHandler) HandleRaftReady() {
 	//2. 调用 SaveReadyState 将 Ready 中需要持久化的内容保存到 badger。
 	//如果 Ready 中存在 snapshot，则应用它；
 	//保存 unstable entries, hard state, snapshot
-	_, err := d.peerStorage.SaveReadyState(&ready)
+	applySnapResult, err := d.peerStorage.SaveReadyState(&ready)
 	if err != nil {
 		log.Panic(err)
 	}
-	//if applySnapResult != nil {
-	//	if !reflect.DeepEqual(applySnapResult.PrevRegion, applySnapResult.Region) {
-	//		d.peerStorage.SetRegion(applySnapResult.Region)
-	//		storeMeta := d.ctx.storeMeta
-	//		storeMeta.Lock()
-	//		storeMeta.regions[applySnapResult.Region.Id] = applySnapResult.Region
-	//		storeMeta.regionRanges.Delete(&regionItem{applySnapResult.PrevRegion})
-	//		storeMeta.regionRanges.ReplaceOrInsert(&regionItem{applySnapResult.Region})
-	//		storeMeta.Unlock()
-	//	}
-	//}
+	if applySnapResult != nil {
+		if !reflect.DeepEqual(applySnapResult.PrevRegion, applySnapResult.Region) {
+			d.peerStorage.SetRegion(applySnapResult.Region)
+			storeMeta := d.ctx.storeMeta
+			storeMeta.Lock()
+			storeMeta.regions[applySnapResult.Region.Id] = applySnapResult.Region
+			storeMeta.regionRanges.Delete(&regionItem{applySnapResult.PrevRegion})
+			storeMeta.regionRanges.ReplaceOrInsert(&regionItem{applySnapResult.Region})
+			storeMeta.Unlock()
+		}
+	}
 	//3. 调用 d.Send() 方法将 Ready 中的 Msg 发送出去；
 	d.Send(d.ctx.trans, ready.Messages)
 
@@ -121,7 +122,6 @@ func (d *peerMsgHandler) processCommittedEntry(entry *pb.Entry, kvWB *engine_uti
 	} else {
 		return d.processRequest(entry, requests, kvWB)
 	}
-	return nil
 }
 
 // processAdminRequest 处理 commit 的 Admin Request 类型 command
@@ -143,7 +143,6 @@ func (d *peerMsgHandler) processAdminRequest(entry *pb.Entry, requests *raft_cmd
 
 // processRequest 处理 commit 的 Put/Get/Delete/Snap 类型 command
 func (d *peerMsgHandler) processRequest(entry *pb.Entry, requests *raft_cmdpb.RaftCmdRequest, kvWB *engine_util.WriteBatch) *engine_util.WriteBatch {
-
 	resp := &raft_cmdpb.RaftCmdResponse{
 		Header:    &raft_cmdpb.RaftResponseHeader{},
 		Responses: make([]*raft_cmdpb.Response, 0),

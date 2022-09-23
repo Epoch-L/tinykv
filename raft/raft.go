@@ -436,7 +436,6 @@ func (r *Raft) followerStep(m pb.Message) {
 		//TODO Follower No processing required
 	case pb.MessageType_MsgSnapshot:
 		//Common Msg，用于 Leader 将快照发送给其他节点
-		//TODO Follower No processing required
 		r.handleSnapshot(m)
 	case pb.MessageType_MsgHeartbeat:
 		//Common Msg，即 Leader 发送的心跳。
@@ -487,7 +486,6 @@ func (r *Raft) candidateStep(m pb.Message) {
 		r.handleRequestVoteResponse(m)
 	case pb.MessageType_MsgSnapshot:
 		//Common Msg，用于 Leader 将快照发送给其他节点
-		//TODO Candidate No processing required
 		r.handleSnapshot(m)
 	case pb.MessageType_MsgHeartbeat:
 		//Common Msg，即 Leader 发送的心跳。
@@ -541,8 +539,7 @@ func (r *Raft) leaderStep(m pb.Message) {
 		//TODO Leader No processing required
 	case pb.MessageType_MsgSnapshot:
 		//Common Msg，用于 Leader 将快照发送给其他节点
-		//3A
-		//TODO project2C
+		//TODO Leader No processing required
 	case pb.MessageType_MsgHeartbeat:
 		//Common Msg，即 Leader 发送的心跳。
 		//不同于论文中使用空的追加日志 RPC 代表心跳，TinyKV 给心跳一个单独的 MsgType
