@@ -91,7 +91,7 @@ func newLog(storage Storage) *RaftLog {
 // storage compact stabled log entries prevent the log entries
 // grow unlimitedly in memory
 //我们需要在某个时间点压缩日志条目，例如
-//存储压缩稳定日志条目阻止日志条目在记忆中无限增长
+//存储压缩稳定日志条目阻止日志条目在内存中无限增长
 func (l *RaftLog) maybeCompact() {
 	// Your Code Here (2C).
 	newFirst, _ := l.storage.FirstIndex()

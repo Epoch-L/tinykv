@@ -225,7 +225,6 @@ func (rn *RawNode) HasReady() bool {
 // Advance通知RawNode，应用程序已经应用并保存了最后一个Ready结果中的进度。
 func (rn *RawNode) Advance(rd Ready) {
 	// Your Code Here (2A).
-
 	// 不等于 nil 说明上次执行 Ready 更新了 softState
 	if rd.SoftState != nil {
 		rn.prevSoftSt = rd.SoftState
