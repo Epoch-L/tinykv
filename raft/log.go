@@ -96,7 +96,10 @@ func (l *RaftLog) maybeCompact() {
 	// Your Code Here (2C).
 	newFirst, _ := l.storage.FirstIndex()
 	if newFirst > l.dummyIndex {
-		l.entries = l.entries[newFirst-l.dummyIndex:]
+		//为了GC原来的 所以append
+		entries := l.entries[newFirst-l.dummyIndex:]
+		l.entries = make([]pb.Entry, 0)
+		l.entries = append(l.entries, entries...)
 	}
 	l.dummyIndex = newFirst
 }
