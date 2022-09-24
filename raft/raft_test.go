@@ -17,12 +17,10 @@ package raft
 import (
 	"bytes"
 	"fmt"
-	"log"
+	pb "github.com/pingcap-incubator/tinykv/proto/pkg/eraftpb"
 	"math/rand"
 	"reflect"
 	"testing"
-
-	pb "github.com/pingcap-incubator/tinykv/proto/pkg/eraftpb"
 )
 
 // returns a new MemoryStorage with only ents filled
@@ -1454,7 +1452,6 @@ func TestLeaderTransferSecondTransferToAnotherNode3A(t *testing.T) {
 }
 
 func checkLeaderTransferState(t *testing.T, r *Raft, state StateType, lead uint64) {
-	log.Println(r.State, r.Lead, state, lead)
 	if r.State != state || r.Lead != lead {
 		t.Fatalf("after transferring, node has state %v lead %v, want state %v lead %v", r.State, r.Lead, state, lead)
 	}

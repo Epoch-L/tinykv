@@ -169,6 +169,8 @@ type Raft struct {
 	// be proposed if the leader's applied index is greater than this
 	// value.
 	// (Used in 3A conf change)
+	// PendingConfIndex 表示当前还没有生效的 ConfChange，只有在日志被提交并应用之后才会生效
+	// 一次只能挂起一个conf更改（在日志中，但尚未应用）。这是通过PendingConfIndex实现的，该值设置为>=最新挂起配置更改（如果有）的日志索引。仅当领导者的应用索引大于此值时，才允许提议配置更改。
 	PendingConfIndex uint64
 
 	// add 随机超时选举，[electionTimeout, 2*electionTimeout)[150ms,300ms]
@@ -329,13 +331,13 @@ func (r *Raft) leaderTick() {
 	//TODO 选举超时 判断心跳回应数量
 
 	//TODO 3A 禅让机制
-	//if r.leadTransferee != None {
-	//	// 在选举超时后领导权禅让仍然未完成，则 leader 应该终止领导权禅让，这样可以恢复客户端请求
-	//	r.transferElapsed++
-	//	if r.transferElapsed >= r.electionTimeout {
-	//		r.leadTransferee = None
-	//	}
-	//}
+	if r.leadTransferee != None {
+		// 在选举超时后领导权禅让仍然未完成，则 leader 应该终止领导权禅让，这样可以恢复客户端请求
+		r.transferElapsed++
+		if r.transferElapsed >= r.electionTimeout {
+			r.leadTransferee = None
+		}
+	}
 }
 func (r *Raft) candidateTick() {
 	r.electionElapsed++
@@ -784,6 +786,12 @@ func (r *Raft) handleAppendEntriesResponse(m pb.Message) {
 			r.broadcastAppendEntry()
 		}
 	}
+	//3A
+	if r.leadTransferee == m.From && r.Prs[m.From].Match == r.RaftLog.LastIndex() {
+		// AppendEntryResponse 回复来自 leadTransferee，检查日志是否是最新的
+		// 如果 leadTransferee 达到了最新的日志则立即发起领导权禅让
+		r.sendTimeoutNow(m.From)
+	}
 }
 
 // maybeUpdate 检查日志同步是不是一个过期的回复
@@ -997,7 +1005,7 @@ func (r *Raft) sendTimeoutNow(to uint64) {
 	r.msgs = append(r.msgs, pb.Message{MsgType: pb.MessageType_MsgTimeoutNow, From: r.id, To: to})
 }
 func (r *Raft) handleTimeoutNowRequest(m pb.Message) {
-	if _, ok := r.Prs[m.From]; !ok {
+	if _, ok := r.Prs[r.id]; !ok {
 		return
 	}
 	// 直接发起选举
