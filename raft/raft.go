@@ -159,7 +159,8 @@ type Raft struct {
 	// Follow the procedure defined in section 3.10 of Raft phd thesis.
 	// (https://web.stanford.edu/~ouster/cgi-bin/papers/OngaroPhD.pdf)
 	// (Used in 3A leader transfer)
-	leadTransferee uint64
+	leadTransferee  uint64
+	transferElapsed int // 用于计时 transfer 的时间
 
 	// Only one conf change may be pending (in the log, but not yet
 	// applied) at a time. This is enforced via PendingConfIndex, which
@@ -210,8 +211,20 @@ func newRaft(c *Config) *Raft {
 		rf.Prs[id] = &Progress{}
 	}
 	//3A
+	rf.PendingConfIndex = rf.initPendingConfIndex()
 
 	return rf
+}
+
+// initPendingConfIndex 初始化 pendingConfIndex
+// 查找 [appliedIndex + 1, lastIndex] 之间是否存在还没有 Apply 的 ConfChange Entry
+func (r *Raft) initPendingConfIndex() uint64 {
+	for i := r.RaftLog.applied + 1; i <= r.RaftLog.LastIndex(); i++ {
+		if r.RaftLog.entries[i-r.RaftLog.dummyIndex].EntryType == pb.EntryType_EntryConfChange {
+			return i
+		}
+	}
+	return None
 }
 
 // resetRandomizedElectionTimeout 生成随机选举超时时间，范围在 [r.electionTimeout, 2*r.electionTimeout]
@@ -316,6 +329,13 @@ func (r *Raft) leaderTick() {
 	//TODO 选举超时 判断心跳回应数量
 
 	//TODO 3A 禅让机制
+	//if r.leadTransferee != None {
+	//	// 在选举超时后领导权禅让仍然未完成，则 leader 应该终止领导权禅让，这样可以恢复客户端请求
+	//	r.transferElapsed++
+	//	if r.transferElapsed >= r.electionTimeout {
+	//		r.leadTransferee = None
+	//	}
+	//}
 }
 func (r *Raft) candidateTick() {
 	r.electionElapsed++
@@ -377,7 +397,8 @@ func (r *Raft) becomeLeader() {
 		r.Prs[id].Next = r.RaftLog.LastIndex() + 1 // 初始化为 leader 的最后一条日志索引（后续出现冲突会往前移动）
 		r.Prs[id].Match = 0                        // 初始化为 0 就可以了
 	}
-
+	//3A
+	r.PendingConfIndex = r.initPendingConfIndex()
 	// 成为 Leader 之后立马在日志中追加一条 noop 日志，这是因为
 	// 在 Raft 论文中提交 Leader 永远不会通过计算副本的方式提交一个之前任期、并且已经被复制到大多数节点的日志
 	// 通过追加一条当前任期的 noop 日志，可以快速的提交之前任期内所有被复制到大多数节点的日志
@@ -449,9 +470,14 @@ func (r *Raft) followerStep(m pb.Message) {
 	case pb.MessageType_MsgTransferLeader:
 		//Local Msg，用于上层请求转移 Leader
 		//TODO Follower No processing required
+		// 非 leader 收到领导权禅让消息，需要转发给 leader
+		if r.Lead != None {
+			m.To = r.Lead
+			r.msgs = append(r.msgs, m)
+		}
 	case pb.MessageType_MsgTimeoutNow:
 		//Local Msg，节点收到后清空 r.electionElapsed，并即刻发起选举
-		//TODO Follower No processing required
+		r.handleTimeoutNowRequest(m)
 	}
 }
 func (r *Raft) candidateStep(m pb.Message) {
@@ -500,10 +526,15 @@ func (r *Raft) candidateStep(m pb.Message) {
 		//Local Msg，用于上层请求转移 Leader
 		//要求领导转移其领导权
 		//TODO Candidate No processing required
+		// 非 leader 收到领导权禅让消息，需要转发给 leader
+		if r.Lead != None {
+			m.To = r.Lead
+			r.msgs = append(r.msgs, m)
+		}
 	case pb.MessageType_MsgTimeoutNow:
 		//Local Msg，节点收到后清空 r.electionElapsed，并即刻发起选举
 		//从领导发送到领导转移目标，以让传输目标立即超时并开始新的选择。
-		//TODO Candidate No processing required
+		r.handleTimeoutNowRequest(m)
 	}
 }
 func (r *Raft) leaderStep(m pb.Message) {
@@ -552,6 +583,8 @@ func (r *Raft) leaderStep(m pb.Message) {
 		//Local Msg，用于上层请求转移 Leader
 		//要求领导转移其领导权
 		//TODO project3
+		r.handleTransferLeader(m)
+
 	case pb.MessageType_MsgTimeoutNow:
 		//Local Msg，节点收到后清空 r.electionElapsed，并即刻发起选举
 		//从领导发送到领导转移目标，以让传输目标立即超时并开始新的选择。
@@ -562,11 +595,26 @@ func (r *Raft) leaderStep(m pb.Message) {
 // addNode add a new node to raft group
 func (r *Raft) addNode(id uint64) {
 	// Your Code Here (3A).
+	if _, ok := r.Prs[id]; !ok {
+		r.Prs[id] = &Progress{Next: r.RaftLog.LastIndex() + 1}
+		r.PendingConfIndex = None // 清除 PendingConfIndex 表示当前没有未完成的配置更新
+	}
 }
 
 // removeNode remove a node from raft group
 func (r *Raft) removeNode(id uint64) {
 	// Your Code Here (3A).
+	if _, ok := r.Prs[id]; ok {
+		delete(r.Prs, id)
+		// 如果是删除节点，由于有节点被移除了，这个时候可能有新的日志可以提交
+		// 这是必要的，因为 TinyKV 只有在 handleAppendRequestResponse 的时候才会判断是否有新的日志可以提交
+		// 如果节点被移除了，则可能会因为缺少这个节点的回复，导致可以提交的日志无法在当前任期被提交
+		if r.State == StateLeader && r.maybeCommit() {
+			log.Infof("[removeNode commit] %v leader commit new entry, commitIndex %v", r.id, r.RaftLog.committed)
+			r.broadcastAppendEntry() // 广播更新所有 follower 的 commitIndex
+		}
+	}
+	r.PendingConfIndex = None // 清除 PendingConfIndex 表示当前没有未完成的配置更新
 }
 
 /* ******************************** Msg Handle ******************************** */
@@ -917,4 +965,43 @@ func (r *Raft) appendEntry(entries []*pb.Entry) {
 		}
 	}
 	r.RaftLog.appendNewEntry(entries)
+}
+func (r *Raft) handleTransferLeader(m pb.Message) {
+	// 判断 transferee 是否在集群中
+	if _, ok := r.Prs[m.From]; !ok {
+		return
+	}
+	// 如果 transferee 就是 leader 自身，则无事发生
+	if m.From == r.id {
+		return
+	}
+	// 判断是否有转让流程正在进行，如果是相同节点的转让流程就返回，否则的话终止上一个转让流程
+	if r.leadTransferee != None {
+		if r.leadTransferee == m.From {
+			return
+		}
+		r.leadTransferee = None
+	}
+	r.leadTransferee = m.From
+	r.transferElapsed = 0
+	if r.Prs[m.From].Match == r.RaftLog.LastIndex() {
+		// 日志是最新的，直接发送 TimeoutNow 消息
+		r.sendTimeoutNow(m.From)
+	} else {
+		// 日志不是最新的，则帮助 leadTransferee 匹配最新的日志
+		r.sendAppend(m.From)
+	}
+}
+
+func (r *Raft) sendTimeoutNow(to uint64) {
+	r.msgs = append(r.msgs, pb.Message{MsgType: pb.MessageType_MsgTimeoutNow, From: r.id, To: to})
+}
+func (r *Raft) handleTimeoutNowRequest(m pb.Message) {
+	if _, ok := r.Prs[m.From]; !ok {
+		return
+	}
+	// 直接发起选举
+	if err := r.Step(pb.Message{MsgType: pb.MessageType_MsgHup}); err != nil {
+		log.Panic(err)
+	}
 }

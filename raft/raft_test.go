@@ -17,6 +17,7 @@ package raft
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -1453,6 +1454,7 @@ func TestLeaderTransferSecondTransferToAnotherNode3A(t *testing.T) {
 }
 
 func checkLeaderTransferState(t *testing.T, r *Raft, state StateType, lead uint64) {
+	log.Println(r.State, r.Lead, state, lead)
 	if r.State != state || r.Lead != lead {
 		t.Fatalf("after transferring, node has state %v lead %v, want state %v lead %v", r.State, r.Lead, state, lead)
 	}
