@@ -80,7 +80,6 @@ func (d *peerMsgHandler) HandleRaftReady() {
 
 	//4. 应用待apply的日志，即实际去执行
 	if len(ready.CommittedEntries) > 0 {
-
 		kvWB := &engine_util.WriteBatch{}
 		for _, ent := range ready.CommittedEntries {
 			kvWB = d.processCommittedEntry(&ent, kvWB)
@@ -481,10 +480,10 @@ func (d *peerMsgHandler) proposeRaftCommand(msg *raft_cmdpb.RaftCmdRequest, cb *
 		return
 	}
 	// Your Code Here (2B).
-	if msg.Requests != nil {
-		d.proposeRequest(msg, cb)
-	} else {
+	if msg.AdminRequest != nil {
 		d.proposeAdminRequest(msg, cb)
+	} else {
+		d.proposeRequest(msg, cb)
 	}
 }
 
