@@ -566,7 +566,6 @@ func (r *Raft) leaderStep(m pb.Message) {
 		//Common Msg，用于 Candidate 请求投票
 		// TODO MsgRequestVote
 		r.handleRequestVote(m)
-
 	case pb.MessageType_MsgRequestVoteResponse:
 		//Common Msg，用于节点告诉 Candidate 投票结果
 		//TODO Leader No processing required
