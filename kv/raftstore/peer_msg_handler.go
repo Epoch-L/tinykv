@@ -149,30 +149,30 @@ func (d *peerMsgHandler) processAdminRequest(entry *pb.Entry, requests *raft_cmd
 			d.handleProposal(entry, ErrResp(errEpochNotMatch))
 			return kvWB
 		}
-		// error: key 不在 region 中
+		// error: key 不在 oldRegion 中
 		if err := util.CheckKeyInRegion(adminReq.Split.SplitKey, d.Region()); err != nil {
 			d.handleProposal(entry, ErrResp(err))
 			return kvWB
 		}
-		// error: Split Region 的 peers 和当前 region 的 peers 数量不相等，不知道为什么会出现这种原因
+		// error: Split Region 的 peers 和当前 oldRegion 的 peers 数量不相等，不知道为什么会出现这种原因
 		if len(d.Region().Peers) != len(adminReq.Split.NewPeerIds) {
 			d.handleProposal(entry, ErrRespStaleCommand(d.Term()))
 			return kvWB
 		}
-		region, split := d.Region(), adminReq.Split
-		region.RegionEpoch.Version++
-		newRegion := d.createNewSplitRegion(split, region) // 创建新的 Region
+		oldRegion, split := d.Region(), adminReq.Split
+		oldRegion.RegionEpoch.Version++
+		newRegion := d.createNewSplitRegion(split, oldRegion) // 创建新的 Region
 		// 修改 storeMeta 信息
 		storeMeta := d.ctx.storeMeta
 		storeMeta.Lock()
-		storeMeta.regionRanges.Delete(&regionItem{region: region})             // 删除 oldRegion 的数据范围
-		region.EndKey = split.SplitKey                                         // 修改 oldRegion 的 range
-		storeMeta.regionRanges.ReplaceOrInsert(&regionItem{region: region})    // 更新 oldRegion 的 range
+		storeMeta.regionRanges.Delete(&regionItem{region: oldRegion})          // 删除 oldRegion 的数据范围
+		oldRegion.EndKey = split.SplitKey                                      // 修改 oldRegion 的 range
+		storeMeta.regionRanges.ReplaceOrInsert(&regionItem{region: oldRegion}) // 更新 oldRegion 的 range
 		storeMeta.regionRanges.ReplaceOrInsert(&regionItem{region: newRegion}) // 创建 newRegion 的 range
 		storeMeta.regions[newRegion.Id] = newRegion                            // 设置 regions 映射
 		storeMeta.Unlock()
 		// 持久化 oldRegion 和 newRegion
-		meta.WriteRegionState(kvWB, region, rspb.PeerState_Normal)
+		meta.WriteRegionState(kvWB, oldRegion, rspb.PeerState_Normal)
 		meta.WriteRegionState(kvWB, newRegion, rspb.PeerState_Normal)
 		// 这几句有用吗？
 		d.SizeDiffHint = 0
@@ -189,10 +189,10 @@ func (d *peerMsgHandler) processAdminRequest(entry *pb.Entry, requests *raft_cmd
 			Header: &raft_cmdpb.RaftResponseHeader{},
 			AdminResponse: &raft_cmdpb.AdminResponse{
 				CmdType: raft_cmdpb.AdminCmdType_Split,
-				Split:   &raft_cmdpb.SplitResponse{Regions: []*metapb.Region{newRegion, region}},
+				Split:   &raft_cmdpb.SplitResponse{Regions: []*metapb.Region{newRegion, oldRegion}},
 			},
 		})
-		log.Infof("[AdminCmdType_Split Process] oldRegin %v, newRegion %v", region, newRegion)
+		log.Infof("[AdminCmdType_Split Process] oldRegin %v, newRegion %v", oldRegion, newRegion)
 		// 发送 heartbeat 给其他节点
 		if d.IsLeader() {
 			d.HeartbeatScheduler(d.ctx.schedulerTaskSender)
@@ -217,15 +217,15 @@ func (d *peerMsgHandler) notifyHeartbeatScheduler(region *metapb.Region, peer *p
 	}
 }
 
-func (d *peerMsgHandler) createNewSplitRegion(split *raft_cmdpb.SplitRequest, region *metapb.Region) *metapb.Region {
+func (d *peerMsgHandler) createNewSplitRegion(split *raft_cmdpb.SplitRequest, oldRegion *metapb.Region) *metapb.Region {
 	newPeers := make([]*metapb.Peer, 0)
-	for i, peer := range region.Peers {
+	for i, peer := range oldRegion.Peers {
 		newPeers = append(newPeers, &metapb.Peer{Id: split.NewPeerIds[i], StoreId: peer.StoreId})
 	}
 	newRegion := &metapb.Region{
 		Id:          split.NewRegionId,
 		StartKey:    split.SplitKey,
-		EndKey:      region.EndKey,
+		EndKey:      oldRegion.EndKey,
 		Peers:       newPeers, // Region 中每个 Peer 的 id 以及所在的 storeId
 		RegionEpoch: &metapb.RegionEpoch{Version: InitEpochVer, ConfVer: InitEpochConfVer},
 	}
