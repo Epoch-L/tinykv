@@ -86,6 +86,7 @@ func (a storeSlice) Less(i, j int) bool { return a[i].GetRegionSize() < a[j].Get
 // Schedule 避免太多 region 堆积在一个 store
 func (s *balanceRegionScheduler) Schedule(cluster opt.Cluster) *operator.Operator {
 	// Your Code Here (3C).
+
 	// 1. 选出所有的 suitableStores
 	stores := make(storeSlice, 0)
 	for _, store := range cluster.GetStores() {
