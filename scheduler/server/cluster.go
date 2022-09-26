@@ -306,7 +306,6 @@ func (c *RaftCluster) processRegionHeartbeat(region *core.RegionInfo) error {
 		c.updateStoreStatusLocked(i)
 	}
 	return nil
-	return nil
 }
 
 func (c *RaftCluster) updateStoreStatusLocked(id uint64) {
