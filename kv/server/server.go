@@ -281,6 +281,7 @@ func (server *Server) KvScan(_ context.Context, req *kvrpcpb.ScanRequest) (*kvrp
 		if key == nil {
 			break
 		}
+
 		lock, err := txn.GetLock(key)
 		if err != nil {
 			if regionErr, ok := err.(*raft_storage.RegionError); ok {
