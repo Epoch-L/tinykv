@@ -7,23 +7,23 @@ CSDN：https://gopher.blog.csdn.net/
 
 以下是项目思路文档：
 
-[TinyKv 介绍](doc/TinyKv-介绍)
+[TinyKv 介绍](doc/TinyKv-介绍.md)
 
-[TinyKv Project1 Standalone KV](doc/TinyKv-Project1-Standalone-KV)
+[TinyKv Project1 Standalone KV](doc/TinyKv-Project1-Standalone-KV.md)
 
-[TinyKv Project2 PartA RaftKV](doc/TinyKv-Project2-PartA-RaftKV)
+[TinyKv Project2 PartA RaftKV](doc/TinyKv-Project2-PartA-RaftKV.md)
 
-[TinyKv Project2 PartB RaftKV](doc/TinyKv-Project2-PartB-RaftKV)
+[TinyKv Project2 PartB RaftKV](doc/TinyKv-Project2-PartB-RaftKV.md)
 
-[TinyKv Project2 PartC RaftKV](doc/TinyKv-Project2-PartC-RaftKV)
+[TinyKv Project2 PartC RaftKV](doc/TinyKv-Project2-PartC-RaftKV.md)
 
-[TinyKv Project3 PartA Multi-raft KV](doc/TinyKv-Project3-PartA-Multi-raft-KV)
+[TinyKv Project3 PartA Multi-raft KV](doc/TinyKv-Project3-PartA-Multi-raft-KV.md)
 
-[TinyKv Project3 PartB Multi-raft KV](doc/TinyKv-Project3-PartB-Multi-raft-KV)
+[TinyKv Project3 PartB Multi-raft KV](doc/TinyKv-Project3-PartB-Multi-raft-KV.md)
 
-[TinyKv Project3 PartC Multi-raft KV](doc/TinyKv-Project3-PartC-Multi-raft-KV)
+[TinyKv Project3 PartC Multi-raft KV](doc/TinyKv-Project3-PartC-Multi-raft-KV.md)
 
-[TinyKv Project4 Transactions](doc/TinyKv-Project4-Transactions)
+[TinyKv Project4 Transactions](doc/TinyKv-Project4-Transactions.md)
 
 
 # The TinyKV Course
