@@ -15,8 +15,8 @@ func (server *Server) RawGet(_ context.Context, req *kvrpcpb.RawGetRequest) (*kv
 	// Your Code Here (1).
 	key := req.GetKey()
 	cf := req.GetCf()
-	// reader, _ := server.storage.Reader(req.Context)
-	reader, _ := server.storage.Reader(nil)
+	reader, _ := server.storage.Reader(req.Context)
+	// reader, _ := server.storage.Reader(nil)
 	value, err := reader.GetCF(cf, key)
 	response := &kvrpcpb.RawGetResponse{
 		Value:    value,
@@ -46,8 +46,8 @@ func (server *Server) RawPut(_ context.Context, req *kvrpcpb.RawPutRequest) (*kv
 	}
 	modify := []storage.Modify{{Data: put}}
 
-	// err := server.storage.Write(req.Context, modify)
-	err := server.storage.Write(nil, modify)
+	err := server.storage.Write(req.Context, modify)
+	// err := server.storage.Write(nil, modify)
 
 	putResponse := &kvrpcpb.RawPutResponse{}
 	if err != nil {
