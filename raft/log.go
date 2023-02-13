@@ -84,8 +84,18 @@ func newLog(storage Storage) *RaftLog {
 // We need to compact the log entries in some point of time like
 // storage compact stabled log entries prevent the log entries
 // grow unlimitedly in memory
+// 我们需要在某个时间点压缩日志条目，例如
+// 存储压缩稳定日志条目阻止日志条目在内存中无限增长
 func (l *RaftLog) maybeCompact() {
 	// Your Code Here (2C).
+	newFirst, _ := l.storage.FirstIndex()
+	if newFirst > l.dummyIndex {
+		//为了GC原来的 所以append
+		entries := l.entries[newFirst-l.dummyIndex:]
+		l.entries = make([]pb.Entry, 0)
+		l.entries = append(l.entries, entries...)
+	}
+	l.dummyIndex = newFirst
 }
 
 // allEntries return all the entries not compacted.
@@ -135,12 +145,14 @@ func (l *RaftLog) Term(i uint64) (uint64, error) {
 	// Your Code Here (2A).
 	if i >= l.dummyIndex {
 		return l.entries[i-l.dummyIndex].Term, nil
-	} else {
-		// 否则的话 i 只能是快照中的日志
-		term, err := l.storage.Term(i)
-		return term, err
 	}
-	//2C
+	// 2. 判断 i 是否等于当前正准备安装的快照的最后一条日志
+	if !IsEmptySnap(l.pendingSnapshot) && i == l.pendingSnapshot.Metadata.Index {
+		return l.pendingSnapshot.Metadata.Term, nil
+	}
+	// 否则的话 i 只能是快照中的日志
+	term, err := l.storage.Term(i)
+	return term, err
 }
 
 // LastTerm 返回最后一条日志的索引

@@ -931,8 +931,43 @@ func (r *Raft) sendTimeoutNow(to uint64) {
 }
 
 // handleSnapshot handle Snapshot RPC request
+//从 SnapshotMetadata 中恢复 Raft 的内部状态，例如 term、commit、membership information
 func (r *Raft) handleSnapshot(m pb.Message) {
 	// Your Code Here (2C).
+	resp := pb.Message{
+		MsgType: pb.MessageType_MsgAppendResponse,
+		From:    r.id,
+		Term:    r.Term,
+	}
+	meta := m.Snapshot.Metadata
+
+	// 1. 如果 term 小于自身的 term 直接拒绝这次快照的数据
+	if m.Term < r.Term {
+		resp.Reject = true
+	} else if r.RaftLog.committed >= meta.Index {
+		// 2. 如果已经提交的日志大于等于快照中的日志，也需要拒绝这次快照
+		// 因为 commit 的日志必定会被 apply，如果被快照中的日志覆盖的话就会破坏一致性
+		resp.Reject = true
+		resp.Index = r.RaftLog.committed
+	} else {
+		// 3. 需要安装日志
+		r.becomeFollower(m.Term, m.From)
+		// 更新日志数据
+		r.RaftLog.dummyIndex = meta.Index + 1
+		r.RaftLog.committed = meta.Index
+		r.RaftLog.applied = meta.Index
+		r.RaftLog.stabled = meta.Index
+		r.RaftLog.pendingSnapshot = m.Snapshot
+		r.RaftLog.entries = make([]pb.Entry, 0)
+		// 更新集群配置
+		r.Prs = make(map[uint64]*Progress)
+		for _, id := range meta.ConfState.Nodes {
+			r.Prs[id] = &Progress{Next: r.RaftLog.LastIndex() + 1}
+		}
+		// 更新 response，提示 leader 更新 nextIndex
+		resp.Index = meta.Index
+	}
+	r.msgs = append(r.msgs, resp)
 }
 
 // addNode add a new node to raft group

@@ -27,7 +27,7 @@ dev: default test
 test:
 	@echo "Running tests in native mode."
 	@export TZ='Asia/Shanghai'; \
-	LOG_LEVEL=fatal $(GOTEST) -cover $(PACKAGES)
+	LOG_LEVEL=debug $(GOTEST) -cover $(PACKAGES)
 
 CURDIR := $(shell pwd)
 export PATH := $(CURDIR)/bin/:$(PATH)
@@ -70,6 +70,7 @@ project2ac:
 
 project2b:
 	$(TEST_CLEAN)
+	# $(GOTEST) ./kv/test_raftstore -run 2B
 	$(GOTEST) ./kv/test_raftstore -run ^TestBasic2B$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestConcurrent2B$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestUnreliable2B$ || true
@@ -84,7 +85,7 @@ project2b:
 	$(TEST_CLEAN)
 
 project2c:
-	$(TEST_CLEAN)
+	# $(TEST_CLEAN)
 	$(GOTEST) ./raft -run 2C || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestOneSnapshot2C$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotRecover2C$ || true
@@ -92,7 +93,7 @@ project2c:
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotUnreliable2C$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotUnreliableRecover2C$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotUnreliableRecoverConcurrentPartition2C$ || true
-	$(TEST_CLEAN)
+	# $(TEST_CLEAN)
 
 project3: project3a project3b project3c
 
