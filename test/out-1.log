@@ -1,1355 +1,234 @@
-# rm -rf /tmp/*test-raftstore*
+rm -rf /tmp/*test-raftstore*
 GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./raft -run 2C || true
 === RUN   TestRestoreSnapshot2C
 --- PASS: TestRestoreSnapshot2C (0.00s)
 === RUN   TestRestoreIgnoreSnapshot2C
 --- PASS: TestRestoreIgnoreSnapshot2C (0.00s)
 === RUN   TestProvideSnap2C
-2023/02/13 11:23:21 raft.go:262: [0;37m[info] [Snapshot Request]1 to 2, prevLogIndex 9, dummyIndex 12[0m
+2023/02/15 10:00:33 raft.go:262: [0;37m[info] [Snapshot Request]1 to 2, prevLogIndex 9, dummyIndex 12[0m
 --- PASS: TestProvideSnap2C (0.00s)
 === RUN   TestRestoreFromSnapMsg2C
 --- PASS: TestRestoreFromSnapMsg2C (0.00s)
 === RUN   TestRestoreFromSnapWithOverlapingPeersMsg2C
 --- PASS: TestRestoreFromSnapWithOverlapingPeersMsg2C (0.00s)
 === RUN   TestSlowNodeRestore2C
---- PASS: TestSlowNodeRestore2C (0.01s)
+--- PASS: TestSlowNodeRestore2C (0.00s)
 === RUN   TestRawNodeRestartFromSnapshot2C
 --- PASS: TestRawNodeRestartFromSnapshot2C (0.00s)
 PASS
-ok  	github.com/pingcap-incubator/tinykv/raft	0.011s
+ok  	github.com/pingcap-incubator/tinykv/raft	0.009s
 GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestOneSnapshot2C|| true
 === RUN   TestOneSnapshot2C
-2023/02/13 11:23:23.343719 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:23:23.343950 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
-2023/02/13 11:23:23.344013 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 158.381µs[0m
-2023/02/13 11:23:23.344340 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:23:23.344410 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
-2023/02/13 11:23:23.344457 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 67.616µs[0m
-2023/02/13 11:23:23.344768 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:23:23.344829 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
-2023/02/13 11:23:23.344876 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 65.359µs[0m
-2023/02/13 11:23:25.171437 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 21, type CompactLog, truncatedIndex 18[0m
-2023/02/13 11:23:25.178095 peer_storage.go:182: [0;37m[info] [region 1] 2 requesting snapshot[0m
-2023/02/13 11:23:25.178113 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 19[0m
-2023/02/13 11:23:25.178101 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 21, type CompactLog, truncatedIndex 18[0m
-2023/02/13 11:23:25.178663 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore2128861280/snap/gen_1_7_21_(default|write|lock).sst, key count 13, size 161[0m
-2023/02/13 11:23:25.185922 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 19[0m
-2023/02/13 11:23:25.195465 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 19[0m
-2023/02/13 11:23:25.855215 peer_storage.go:182: [0;37m[info] [region 1] 2 requesting snapshot[0m
-2023/02/13 11:23:25.855239 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 9, dummyIndex 19[0m
-2023/02/13 11:23:25.855774 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore2128861280/snap/gen_1_7_26_(default|write|lock).sst, key count 16, size 204[0m
-2023/02/13 11:23:25.951577 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 9, dummyIndex 19[0m
-2023/02/13 11:23:25.961525 peer_storage.go:334: [0;37m[info] [region 1] 1 begin to apply snapshot[0m
-2023/02/13 11:23:25.961576 peer_storage.go:298: [0;37m[info] [region 1] clear peer 1 meta key 1 apply key 1 raft key and 4 raft logs, takes 18.817µs[0m
-2023/02/13 11:23:25.961620 region_task.go:93: [0;37m[info] begin apply snap data. [regionId: 1][0m
-2023/02/13 11:23:25.963806 region_task.go:137: [0;37m[info] succeed in deleting data in range. [regionId: 1, startKey: , endKey: ][0m
-2023/02/13 11:23:26.190900 snap.go:700: [0;37m[info] apply snapshot ingested 1 tables[0m
-2023/02/13 11:23:26.190933 region_task.go:117: [0;37m[info] applying new data. [regionId: 1, timeTakes: 226.96688ms][0m
-2023/02/13 11:23:26.190955 peer_storage.go:370: [0;37m[info] [region 1] 1 end to apply snapshot, metaDataIndex 26, truncatedStateIndex 26[0m
-2023/02/13 11:23:26.193399 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:23:26.197068 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:23:26.197276 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
-2023/02/13 11:23:26.197358 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:23:26.197391 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
---- FAIL: TestOneSnapshot2C (3.36s)
-panic: [region 1] 1 unexpected raft log index: lastIndex 9 < appliedIndex 26 [recovered]
-	panic: [region 1] 1 unexpected raft log index: lastIndex 9 < appliedIndex 26
-
-goroutine 46 [running]:
-testing.tRunner.func1.2({0xaa6280, 0xc004338d60})
-	/usr/local/go/src/testing/testing.go:1389 +0x24e
-testing.tRunner.func1()
-	/usr/local/go/src/testing/testing.go:1392 +0x39f
-panic({0xaa6280, 0xc004338d60})
-	/usr/local/go/src/runtime/panic.go:838 +0x207
-github.com/pingcap-incubator/tinykv/kv/raftstore.NewPeerStorage(0xc0001e5920, 0xc00437f100, 0xc0e4f08840, {0xc0043457b0, 0xc})
-	/home/liuwei/tinykv/kv/raftstore/peer_storage.go:65 +0x319
-github.com/pingcap-incubator/tinykv/kv/raftstore.NewPeer(0x1, 0xc000138280, 0xb9a6af?, 0xc00437f100, 0xc0e4187680?, 0xc0e4f04480)
-	/home/liuwei/tinykv/kv/raftstore/peer.go:121 +0x145
-github.com/pingcap-incubator/tinykv/kv/raftstore.createPeer(0x1, 0xc042d680d2?, 0x1c?, 0x499988e?, 0xc00437f100)
-	/home/liuwei/tinykv/kv/raftstore/peer.go:42 +0x105
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).loadPeers.func1(0xc00029e900?)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:156 +0x2f9
-github.com/Connor1996/badger.(*DB).View(0x7f5795edefff?, 0xc0e4187a28)
-	/home/liuwei/go/pkg/mod/github.com/!connor1996/badger@v1.5.1-0.20220222053432-2d2cbf472c77/transaction.go:546 +0x96
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).loadPeers(0xc004347d00)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:123 +0x245
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).start(0xc004347d00, 0xc004347d80, 0xc000138280, 0xc0001e5920, {0xc72a00?, 0xc0001d1540}, {0xc7ac20?, 0xc0002947e0}, 0xc004347d40)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:252 +0x74d
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Node).startNode(0xc0e4f04210, 0xc78a08?, {0xc72a00, 0xc0001d1540}, 0x419187?)
-	/home/liuwei/tinykv/kv/raftstore/node.go:194 +0xd1
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Node).Start(0xc0e4f04210, {0xc78a08, 0xc000134008}, 0xc0002947e0?, {0xc72a00, 0xc0001d1540}, 0x9b5626?)
-	/home/liuwei/tinykv/kv/raftstore/node.go:71 +0x1cc
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.(*NodeSimulator).RunStore(0xc0001d1580, 0xc000138280, 0x1?, {0xc78a08, 0xc000134008})
-	/home/liuwei/tinykv/kv/test_raftstore/node.go:155 +0x1f0
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.(*Cluster).StartServer(0xc000194720, 0xb8336a?)
-	/home/liuwei/tinykv/kv/test_raftstore/cluster.go:172 +0x10d
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.TestOneSnapshot2C(0xc000185040)
-	/home/liuwei/tinykv/kv/test_raftstore/test_test.go:483 +0x6f8
-testing.tRunner(0xc000185040, 0xbd2410)
-	/usr/local/go/src/testing/testing.go:1439 +0x102
-created by testing.(*T).Run
-	/usr/local/go/src/testing/testing.go:1486 +0x35f
-FAIL	github.com/pingcap-incubator/tinykv/kv/test_raftstore	3.386s
-FAIL
+2023/02/15 10:01:37.170329 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:01:37.170727 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 1[0m
+2023/02/15 10:01:37.170869 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 295.16µs[0m
+2023/02/15 10:01:37.171551 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:01:37.171699 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 2[0m
+2023/02/15 10:01:37.171795 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 137.802µs[0m
+2023/02/15 10:01:37.172404 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:01:37.172565 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 3[0m
+2023/02/15 10:01:37.172652 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 124.286µs[0m
+2023/02/15 10:01:38.947764 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 18, type CompactLog, truncatedIndex 15[0m
+2023/02/15 10:01:38.976437 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 18, type CompactLog, truncatedIndex 15[0m
+2023/02/15 10:01:39.014210 peer_storage.go:182: [0;37m[info] [region 1] 2 requesting snapshot[0m
+2023/02/15 10:01:39.014247 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 16[0m
+2023/02/15 10:01:39.014268 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 16[0m
+2023/02/15 10:01:39.015418 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore3737482650/snap/gen_1_6_18_(default|write|lock).sst, key count 11, size 135[0m
+2023/02/15 10:01:39.027327 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 19, type CompactLog, truncatedIndex 16[0m
+2023/02/15 10:01:39.046934 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 17[0m
+2023/02/15 10:01:39.046950 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 19, type CompactLog, truncatedIndex 16[0m
+2023/02/15 10:01:39.110020 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 17[0m
+2023/02/15 10:01:41.277564 peer_storage.go:182: [0;37m[info] [region 1] 2 requesting snapshot[0m
+2023/02/15 10:01:41.277626 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 17[0m
+2023/02/15 10:01:41.278478 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore3737482650/snap/gen_1_6_26_(default|write|lock).sst, key count 16, size 204[0m
+2023/02/15 10:01:41.280264 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 17[0m
+2023/02/15 10:01:41.332043 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 17[0m
+2023/02/15 10:01:41.420763 raft.go:262: [0;37m[info] [Snapshot Request]2 to 1, prevLogIndex 8, dummyIndex 17[0m
+2023/02/15 10:01:41.500291 peer_storage.go:334: [0;37m[info] [region 1] 1 begin to apply snapshot[0m
+2023/02/15 10:01:41.500346 peer_storage.go:298: [0;37m[info] [region 1] clear peer 1 meta key 1 apply key 1 raft key and 3 raft logs, takes 15.576µs[0m
+2023/02/15 10:01:41.500402 region_task.go:93: [0;37m[info] begin apply snap data. [regionId: 1][0m
+2023/02/15 10:01:41.512281 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 28, type CompactLog, truncatedIndex 26[0m
+2023/02/15 10:01:41.525399 region_task.go:137: [0;37m[info] succeed in deleting data in range. [regionId: 1, startKey: , endKey: ][0m
+2023/02/15 10:01:41.538476 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 28, type CompactLog, truncatedIndex 26[0m
+2023/02/15 10:01:41.745232 snap.go:700: [0;37m[info] apply snapshot ingested 1 tables[0m
+2023/02/15 10:01:41.745269 region_task.go:117: [0;37m[info] applying new data. [regionId: 1, timeTakes: 219.613944ms][0m
+2023/02/15 10:01:41.745295 peer_storage.go:370: [0;37m[info] [region 1] 1 end to apply snapshot, metaDataIndex 26, truncatedStateIndex 26[0m
+2023/02/15 10:01:41.755212 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+2023/02/15 10:01:41.771908 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:01:41.772074 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 1[0m
+2023/02/15 10:01:41.772159 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 143.171µs[0m
+2023/02/15 10:01:41.772221 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+2023/02/15 10:01:41.772249 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
+2023/02/15 10:01:41.772307 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
+--- PASS: TestOneSnapshot2C (10.88s)
+PASS
+ok  	github.com/pingcap-incubator/tinykv/kv/test_raftstore	10.905s
 GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestSnapshotRecover2C|| true
 === RUN   TestSnapshotRecover2C
-2023/02/13 11:23:28.285260 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:23:28.285483 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 1[0m
-2023/02/13 11:23:28.285546 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 154.663µs[0m
-2023/02/13 11:23:28.285900 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:23:28.285974 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 2[0m
-2023/02/13 11:23:28.286019 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 68.293µs[0m
-2023/02/13 11:23:28.286329 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:23:28.286396 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 3[0m
-2023/02/13 11:23:28.286443 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 69µs[0m
-2023/02/13 11:23:28.286761 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:23:28.286825 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 4[0m
-2023/02/13 11:23:28.286872 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 67.86µs[0m
-2023/02/13 11:23:28.287188 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:23:28.287249 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 5[0m
-2023/02/13 11:23:28.287296 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 67.107µs[0m
-2023/02/13 11:23:31.260996 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 110, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:23:31.265940 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 110, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:23:31.265963 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 110, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:23:31.271632 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 110, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:23:31.271757 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 110, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:23:33.205102 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 211, type CompactLog, truncatedIndex 209[0m
-2023/02/13 11:23:33.209989 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 211, type CompactLog, truncatedIndex 209[0m
-2023/02/13 11:23:33.210051 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 211, type CompactLog, truncatedIndex 209[0m
-2023/02/13 11:23:33.210048 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 211, type CompactLog, truncatedIndex 209[0m
-2023/02/13 11:23:33.215576 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 211, type CompactLog, truncatedIndex 209[0m
-2023/02/13 11:23:34.297255 test_test.go:257: [0;33m[warning] shutdown servers
+2023/02/15 10:01:54.575560 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:01:54.576031 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
+2023/02/15 10:01:54.576168 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 305.783µs[0m
+2023/02/15 10:01:54.576913 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:01:54.577076 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
+2023/02/15 10:01:54.577174 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 147.742µs[0m
+2023/02/15 10:01:54.577790 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:01:54.577943 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
+2023/02/15 10:01:54.578077 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 179.831µs[0m
+2023/02/15 10:01:54.578673 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
+2023/02/15 10:01:54.578819 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 4[0m
+2023/02/15 10:01:54.578942 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 167.678µs[0m
+2023/02/15 10:01:54.579569 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
+2023/02/15 10:01:54.579724 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 5[0m
+2023/02/15 10:01:54.579816 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 141.996µs[0m
+2023/02/15 10:02:06.136926 test_test.go:257: [0;33m[warning] shutdown servers
 [0m
-2023/02/13 11:23:34.297288 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:23:34.307591 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:23:34.307648 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:23:34.307681 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:23:34.310009 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:23:34.810708 test_test.go:264: [0;33m[warning] restart servers
+2023/02/15 10:02:06.136965 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+2023/02/15 10:02:06.152097 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
+2023/02/15 10:02:06.152151 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
+2023/02/15 10:02:06.192437 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
+2023/02/15 10:02:06.216697 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
+2023/02/15 10:02:06.716825 test_test.go:264: [0;33m[warning] restart servers
 [0m
-2023/02/13 11:23:34.811328 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:23:34.811551 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 1[0m
-2023/02/13 11:23:34.811730 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 279.176µs[0m
-2023/02/13 11:23:34.812363 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:23:34.812504 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 2[0m
-2023/02/13 11:23:34.812656 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 205.472µs[0m
-2023/02/13 11:23:34.813244 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:23:34.813375 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 3[0m
-2023/02/13 11:23:34.813503 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 174.556µs[0m
-2023/02/13 11:23:34.814084 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:23:34.814197 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 4[0m
-2023/02/13 11:23:34.814337 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 181.93µs[0m
-2023/02/13 11:23:34.814945 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:23:34.815069 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 5[0m
-2023/02/13 11:23:34.815216 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 199.778µs[0m
-2023/02/13 11:23:36.486544 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 314, type CompactLog, truncatedIndex 311[0m
-2023/02/13 11:23:36.491591 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 314, type CompactLog, truncatedIndex 311[0m
-2023/02/13 11:23:36.491593 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 314, type CompactLog, truncatedIndex 311[0m
-2023/02/13 11:23:36.494225 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 314, type CompactLog, truncatedIndex 311[0m
-2023/02/13 11:23:36.497170 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 314, type CompactLog, truncatedIndex 311[0m
-2023/02/13 11:23:39.486452 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 416, type CompactLog, truncatedIndex 413[0m
-2023/02/13 11:23:39.494016 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 416, type CompactLog, truncatedIndex 413[0m
-2023/02/13 11:23:39.494121 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 416, type CompactLog, truncatedIndex 413[0m
-2023/02/13 11:23:39.496596 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 416, type CompactLog, truncatedIndex 413[0m
-2023/02/13 11:23:39.501970 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 416, type CompactLog, truncatedIndex 413[0m
-2023/02/13 11:23:41.389338 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 515, type CompactLog, truncatedIndex 513[0m
-2023/02/13 11:23:41.394617 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 515, type CompactLog, truncatedIndex 513[0m
-2023/02/13 11:23:41.397150 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 515, type CompactLog, truncatedIndex 513[0m
-2023/02/13 11:23:41.397191 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 515, type CompactLog, truncatedIndex 513[0m
-2023/02/13 11:23:41.397222 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 515, type CompactLog, truncatedIndex 513[0m
-2023/02/13 11:23:43.534299 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 616, type CompactLog, truncatedIndex 613[0m
-2023/02/13 11:23:43.539553 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 616, type CompactLog, truncatedIndex 613[0m
-2023/02/13 11:23:43.544991 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 616, type CompactLog, truncatedIndex 613[0m
-2023/02/13 11:23:43.544990 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 616, type CompactLog, truncatedIndex 613[0m
-2023/02/13 11:23:43.550602 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 616, type CompactLog, truncatedIndex 613[0m
-2023/02/13 11:23:44.280680 test_test.go:257: [0;33m[warning] shutdown servers
+2023/02/15 10:02:06.717503 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:02:06.717732 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
+2023/02/15 10:02:06.717874 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 213.676µs[0m
+2023/02/15 10:02:06.718513 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:02:06.718706 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
+2023/02/15 10:02:06.718821 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 210.464µs[0m
+2023/02/15 10:02:06.719448 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:02:06.719607 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
+2023/02/15 10:02:06.719723 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 174.695µs[0m
+2023/02/15 10:02:06.720343 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
+2023/02/15 10:02:06.720505 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 4[0m
+2023/02/15 10:02:06.720637 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 192.068µs[0m
+2023/02/15 10:02:06.721308 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
+2023/02/15 10:02:06.721454 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 5[0m
+2023/02/15 10:02:06.721573 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 163.018µs[0m
+2023/02/15 10:02:45.547035 test_test.go:257: [0;33m[warning] shutdown servers
 [0m
-2023/02/13 11:23:44.280710 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:23:44.287802 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:23:44.287828 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:23:44.290224 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:23:44.290365 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:23:44.791333 test_test.go:264: [0;33m[warning] restart servers
+2023/02/15 10:02:45.547096 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+2023/02/15 10:02:45.611682 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
+2023/02/15 10:02:45.611735 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
+2023/02/15 10:02:45.660961 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
+2023/02/15 10:02:45.661029 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
+2023/02/15 10:02:46.161508 test_test.go:264: [0;33m[warning] restart servers
 [0m
-2023/02/13 11:23:44.791946 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:23:44.792172 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 1[0m
-2023/02/13 11:23:44.792337 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 260.351µs[0m
-2023/02/13 11:23:44.792941 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:23:44.793080 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 2[0m
-2023/02/13 11:23:44.793206 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 178.599µs[0m
-2023/02/13 11:23:44.793913 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:23:44.794058 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 3[0m
-2023/02/13 11:23:44.794186 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 191.02µs[0m
-2023/02/13 11:23:44.794788 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:23:44.794913 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 4[0m
-2023/02/13 11:23:44.795036 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 174.533µs[0m
-2023/02/13 11:23:44.795668 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:23:44.795779 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 5[0m
-2023/02/13 11:23:44.795925 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 185.24µs[0m
-2023/02/13 11:23:46.611886 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 716, type CompactLog, truncatedIndex 713[0m
-2023/02/13 11:23:46.619784 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 716, type CompactLog, truncatedIndex 713[0m
-2023/02/13 11:23:46.624892 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 716, type CompactLog, truncatedIndex 713[0m
-2023/02/13 11:23:46.624898 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 716, type CompactLog, truncatedIndex 713[0m
-2023/02/13 11:23:46.630616 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 716, type CompactLog, truncatedIndex 713[0m
-2023/02/13 11:23:49.562844 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 816, type CompactLog, truncatedIndex 813[0m
-2023/02/13 11:23:49.567915 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 816, type CompactLog, truncatedIndex 813[0m
-2023/02/13 11:23:49.570697 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 816, type CompactLog, truncatedIndex 813[0m
-2023/02/13 11:23:49.570799 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 816, type CompactLog, truncatedIndex 813[0m
-2023/02/13 11:23:49.573560 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 816, type CompactLog, truncatedIndex 813[0m
-2023/02/13 11:23:51.517416 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 917, type CompactLog, truncatedIndex 914[0m
-2023/02/13 11:23:51.522451 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 917, type CompactLog, truncatedIndex 914[0m
-2023/02/13 11:23:51.522629 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 917, type CompactLog, truncatedIndex 914[0m
-2023/02/13 11:23:51.522636 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 917, type CompactLog, truncatedIndex 914[0m
-2023/02/13 11:23:51.528096 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 917, type CompactLog, truncatedIndex 914[0m
-2023/02/13 11:23:53.514889 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1019, type CompactLog, truncatedIndex 1016[0m
-2023/02/13 11:23:53.520081 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1019, type CompactLog, truncatedIndex 1016[0m
-2023/02/13 11:23:53.520091 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1019, type CompactLog, truncatedIndex 1016[0m
-2023/02/13 11:23:53.525599 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1019, type CompactLog, truncatedIndex 1016[0m
-2023/02/13 11:23:53.531204 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1019, type CompactLog, truncatedIndex 1016[0m
-2023/02/13 11:23:53.742065 test_test.go:257: [0;33m[warning] shutdown servers
+2023/02/15 10:02:46.162167 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:02:46.162424 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
+2023/02/15 10:02:46.162618 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 294.592µs[0m
+2023/02/15 10:02:46.163354 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:02:46.163509 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
+2023/02/15 10:02:46.163667 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 208.418µs[0m
+2023/02/15 10:02:46.164323 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:02:46.164471 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
+2023/02/15 10:02:46.164613 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 191.055µs[0m
+2023/02/15 10:02:46.165256 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
+2023/02/15 10:02:46.165411 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 4[0m
+2023/02/15 10:02:46.165569 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 203.994µs[0m
+2023/02/15 10:02:46.166286 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
+2023/02/15 10:02:46.166438 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 5[0m
+2023/02/15 10:02:46.166593 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 201.674µs[0m
+2023/02/15 10:02:53.889317 test_test.go:257: [0;33m[warning] shutdown servers
 [0m
-2023/02/13 11:23:53.742081 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:23:53.749338 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:23:53.749361 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:23:53.749376 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:23:53.751770 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:23:54.252383 test_test.go:264: [0;33m[warning] restart servers
+2023/02/15 10:02:53.889370 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+2023/02/15 10:02:53.902324 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
+2023/02/15 10:02:53.939868 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
+2023/02/15 10:02:53.939927 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
+2023/02/15 10:02:53.940969 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
+2023/02/15 10:02:54.442084 test_test.go:264: [0;33m[warning] restart servers
 [0m
-2023/02/13 11:23:54.253003 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:23:54.253183 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 1[0m
-2023/02/13 11:23:54.253327 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 215.092µs[0m
-2023/02/13 11:23:54.253965 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:23:54.254102 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 2[0m
-2023/02/13 11:23:54.254211 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 165.436µs[0m
-2023/02/13 11:23:54.254805 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:23:54.254926 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 3[0m
-2023/02/13 11:23:54.255036 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 159.726µs[0m
-2023/02/13 11:23:54.255713 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:23:54.255885 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 4[0m
-2023/02/13 11:23:54.256008 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 169.849µs[0m
-2023/02/13 11:23:54.256609 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:23:54.256688 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 5[0m
-2023/02/13 11:23:54.256777 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 123.158µs[0m
-2023/02/13 11:23:56.982233 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1119, type CompactLog, truncatedIndex 1116[0m
-2023/02/13 11:23:56.987780 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1119, type CompactLog, truncatedIndex 1116[0m
-2023/02/13 11:23:56.987817 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1119, type CompactLog, truncatedIndex 1116[0m
-2023/02/13 11:23:56.987834 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1119, type CompactLog, truncatedIndex 1116[0m
-2023/02/13 11:23:56.990898 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1119, type CompactLog, truncatedIndex 1116[0m
-2023/02/13 11:23:58.549867 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:23:58.549935 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:23:58.549957 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:23:58.549990 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:23:58.550031 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
---- PASS: TestSnapshotRecover2C (31.20s)
+2023/02/15 10:02:54.442856 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:02:54.443193 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
+2023/02/15 10:02:54.443417 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 393.399µs[0m
+2023/02/15 10:02:54.444078 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:02:54.444228 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
+2023/02/15 10:02:54.444406 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 225.604µs[0m
+2023/02/15 10:02:54.445069 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:02:54.445238 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
+2023/02/15 10:02:54.445414 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 249.956µs[0m
+2023/02/15 10:02:54.446057 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
+2023/02/15 10:02:54.446198 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 4[0m
+2023/02/15 10:02:54.446386 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 230.727µs[0m
+2023/02/15 10:02:54.447072 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
+2023/02/15 10:02:54.447212 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 5[0m
+2023/02/15 10:02:54.447375 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 209.868µs[0m
+2023/02/15 10:02:58.502296 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
+2023/02/15 10:02:58.502381 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
+2023/02/15 10:02:58.529975 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
+2023/02/15 10:02:58.555269 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
+2023/02/15 10:02:58.555332 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+--- PASS: TestSnapshotRecover2C (77.74s)
 PASS
-ok  	github.com/pingcap-incubator/tinykv/kv/test_raftstore	31.272s
+ok  	github.com/pingcap-incubator/tinykv/kv/test_raftstore	77.840s
 GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestSnapshotRecoverManyClients2C|| true
 === RUN   TestSnapshotRecoverManyClients2C
-2023/02/13 11:24:00.888054 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:24:00.888317 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 2[0m
-2023/02/13 11:24:00.888385 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 171.55µs[0m
-2023/02/13 11:24:00.888766 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:24:00.888846 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 3[0m
-2023/02/13 11:24:00.888913 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 96.427µs[0m
-2023/02/13 11:24:00.889242 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:24:00.889311 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 4[0m
-2023/02/13 11:24:00.889358 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 70.849µs[0m
-2023/02/13 11:24:00.889697 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:24:00.889765 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 5[0m
-2023/02/13 11:24:00.889818 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 75.9µs[0m
-2023/02/13 11:24:00.890157 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:24:00.890225 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 1[0m
-2023/02/13 11:24:00.890276 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 73.366µs[0m
-2023/02/13 11:24:02.191901 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 118, type CompactLog, truncatedIndex 105[0m
-2023/02/13 11:24:02.202386 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 118, type CompactLog, truncatedIndex 105[0m
-2023/02/13 11:24:02.202400 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 118, type CompactLog, truncatedIndex 105[0m
-2023/02/13 11:24:02.207873 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 118, type CompactLog, truncatedIndex 105[0m
-2023/02/13 11:24:02.207957 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 118, type CompactLog, truncatedIndex 105[0m
-2023/02/13 11:24:02.494760 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 235, type CompactLog, truncatedIndex 215[0m
-2023/02/13 11:24:02.502576 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 235, type CompactLog, truncatedIndex 215[0m
-2023/02/13 11:24:02.505224 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 235, type CompactLog, truncatedIndex 215[0m
-2023/02/13 11:24:02.515978 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 235, type CompactLog, truncatedIndex 215[0m
-2023/02/13 11:24:02.518504 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 235, type CompactLog, truncatedIndex 215[0m
-2023/02/13 11:24:02.789159 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 342, type CompactLog, truncatedIndex 328[0m
-2023/02/13 11:24:02.794022 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 342, type CompactLog, truncatedIndex 328[0m
-2023/02/13 11:24:02.799611 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 342, type CompactLog, truncatedIndex 328[0m
-2023/02/13 11:24:02.799674 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 342, type CompactLog, truncatedIndex 328[0m
-2023/02/13 11:24:02.805094 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 342, type CompactLog, truncatedIndex 328[0m
-2023/02/13 11:24:03.093688 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 463, type CompactLog, truncatedIndex 449[0m
-2023/02/13 11:24:03.104132 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 463, type CompactLog, truncatedIndex 449[0m
-2023/02/13 11:24:03.104156 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 463, type CompactLog, truncatedIndex 449[0m
-2023/02/13 11:24:03.104137 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 463, type CompactLog, truncatedIndex 449[0m
-2023/02/13 11:24:03.109815 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 463, type CompactLog, truncatedIndex 449[0m
-2023/02/13 11:24:03.131362 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 484, type CompactLog, truncatedIndex 461[0m
-2023/02/13 11:24:03.139040 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 484, type CompactLog, truncatedIndex 461[0m
-2023/02/13 11:24:03.144259 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 484, type CompactLog, truncatedIndex 461[0m
-2023/02/13 11:24:03.144278 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 484, type CompactLog, truncatedIndex 461[0m
-2023/02/13 11:24:03.149736 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 484, type CompactLog, truncatedIndex 461[0m
-2023/02/13 11:24:03.383030 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 583, type CompactLog, truncatedIndex 571[0m
-2023/02/13 11:24:03.393748 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 583, type CompactLog, truncatedIndex 571[0m
-2023/02/13 11:24:03.393767 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 583, type CompactLog, truncatedIndex 571[0m
-2023/02/13 11:24:03.399265 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 583, type CompactLog, truncatedIndex 571[0m
-2023/02/13 11:24:03.399310 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 583, type CompactLog, truncatedIndex 571[0m
-2023/02/13 11:24:03.655212 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 684, type CompactLog, truncatedIndex 672[0m
-2023/02/13 11:24:03.660132 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 684, type CompactLog, truncatedIndex 672[0m
-2023/02/13 11:24:03.660270 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 684, type CompactLog, truncatedIndex 672[0m
-2023/02/13 11:24:03.665858 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 684, type CompactLog, truncatedIndex 672[0m
-2023/02/13 11:24:03.671380 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 684, type CompactLog, truncatedIndex 672[0m
-2023/02/13 11:24:03.692471 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 705, type CompactLog, truncatedIndex 682[0m
-2023/02/13 11:24:03.702904 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 705, type CompactLog, truncatedIndex 682[0m
-2023/02/13 11:24:03.705238 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 705, type CompactLog, truncatedIndex 682[0m
-2023/02/13 11:24:03.710455 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 705, type CompactLog, truncatedIndex 682[0m
-2023/02/13 11:24:03.717718 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 705, type CompactLog, truncatedIndex 682[0m
-2023/02/13 11:24:03.939293 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 806, type CompactLog, truncatedIndex 795[0m
-2023/02/13 11:24:03.944742 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 806, type CompactLog, truncatedIndex 795[0m
-2023/02/13 11:24:03.950830 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 806, type CompactLog, truncatedIndex 795[0m
-2023/02/13 11:24:03.950904 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 806, type CompactLog, truncatedIndex 795[0m
-2023/02/13 11:24:03.985553 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 806, type CompactLog, truncatedIndex 795[0m
-2023/02/13 11:24:04.438231 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 927, type CompactLog, truncatedIndex 905[0m
-2023/02/13 11:24:04.446395 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 927, type CompactLog, truncatedIndex 905[0m
-2023/02/13 11:24:04.454336 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 927, type CompactLog, truncatedIndex 905[0m
-2023/02/13 11:24:04.459781 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 927, type CompactLog, truncatedIndex 905[0m
-2023/02/13 11:24:04.465205 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 927, type CompactLog, truncatedIndex 905[0m
-2023/02/13 11:24:04.756740 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1026, type CompactLog, truncatedIndex 1007[0m
-2023/02/13 11:24:04.767625 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1026, type CompactLog, truncatedIndex 1007[0m
-2023/02/13 11:24:04.767632 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1026, type CompactLog, truncatedIndex 1007[0m
-2023/02/13 11:24:04.770061 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1026, type CompactLog, truncatedIndex 1007[0m
-2023/02/13 11:24:04.772909 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1026, type CompactLog, truncatedIndex 1007[0m
-2023/02/13 11:24:05.048366 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1137, type CompactLog, truncatedIndex 1120[0m
-2023/02/13 11:24:05.053353 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1137, type CompactLog, truncatedIndex 1120[0m
-2023/02/13 11:24:05.053444 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1137, type CompactLog, truncatedIndex 1120[0m
-2023/02/13 11:24:05.053476 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1137, type CompactLog, truncatedIndex 1120[0m
-2023/02/13 11:24:05.056096 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1137, type CompactLog, truncatedIndex 1120[0m
-2023/02/13 11:24:05.292822 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1235, type CompactLog, truncatedIndex 1221[0m
-2023/02/13 11:24:05.297989 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1235, type CompactLog, truncatedIndex 1221[0m
-2023/02/13 11:24:05.303532 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1235, type CompactLog, truncatedIndex 1221[0m
-2023/02/13 11:24:05.303575 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1235, type CompactLog, truncatedIndex 1221[0m
-2023/02/13 11:24:05.306314 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1235, type CompactLog, truncatedIndex 1221[0m
-2023/02/13 11:24:05.585249 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1359, type CompactLog, truncatedIndex 1337[0m
-2023/02/13 11:24:05.595340 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1359, type CompactLog, truncatedIndex 1337[0m
-2023/02/13 11:24:05.597765 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1359, type CompactLog, truncatedIndex 1337[0m
-2023/02/13 11:24:05.597797 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1359, type CompactLog, truncatedIndex 1337[0m
-2023/02/13 11:24:05.600206 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1359, type CompactLog, truncatedIndex 1337[0m
-2023/02/13 11:24:05.853290 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1452, type CompactLog, truncatedIndex 1438[0m
-2023/02/13 11:24:05.866240 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1452, type CompactLog, truncatedIndex 1438[0m
-2023/02/13 11:24:05.868821 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1452, type CompactLog, truncatedIndex 1438[0m
-2023/02/13 11:24:05.877055 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1452, type CompactLog, truncatedIndex 1438[0m
-2023/02/13 11:24:05.877147 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1452, type CompactLog, truncatedIndex 1438[0m
-2023/02/13 11:24:05.893141 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1470, type CompactLog, truncatedIndex 1450[0m
-2023/02/13 11:24:05.900950 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1470, type CompactLog, truncatedIndex 1450[0m
-2023/02/13 11:24:05.903910 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1470, type CompactLog, truncatedIndex 1450[0m
-2023/02/13 11:24:05.904025 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1470, type CompactLog, truncatedIndex 1450[0m
-2023/02/13 11:24:05.912244 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1470, type CompactLog, truncatedIndex 1450[0m
-2023/02/13 11:24:06.137411 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1570, type CompactLog, truncatedIndex 1552[0m
-2023/02/13 11:24:06.148247 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1570, type CompactLog, truncatedIndex 1552[0m
-2023/02/13 11:24:06.156054 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1570, type CompactLog, truncatedIndex 1552[0m
-2023/02/13 11:24:06.158500 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1570, type CompactLog, truncatedIndex 1552[0m
-2023/02/13 11:24:06.158558 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1570, type CompactLog, truncatedIndex 1552[0m
-2023/02/13 11:24:06.396668 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1677, type CompactLog, truncatedIndex 1658[0m
-2023/02/13 11:24:06.410030 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1677, type CompactLog, truncatedIndex 1658[0m
-2023/02/13 11:24:06.412745 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1677, type CompactLog, truncatedIndex 1658[0m
-2023/02/13 11:24:06.412755 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1677, type CompactLog, truncatedIndex 1658[0m
-2023/02/13 11:24:06.418040 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1677, type CompactLog, truncatedIndex 1658[0m
-2023/02/13 11:24:06.696721 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1786, type CompactLog, truncatedIndex 1764[0m
-2023/02/13 11:24:06.709673 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1786, type CompactLog, truncatedIndex 1764[0m
-2023/02/13 11:24:06.709743 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1786, type CompactLog, truncatedIndex 1764[0m
-2023/02/13 11:24:06.709792 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1786, type CompactLog, truncatedIndex 1764[0m
-2023/02/13 11:24:06.709796 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1786, type CompactLog, truncatedIndex 1764[0m
-2023/02/13 11:24:06.933263 test_test.go:257: [0;33m[warning] shutdown servers
+2023/02/15 10:03:07.604981 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:03:07.605419 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 1[0m
+2023/02/15 10:03:07.605539 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 290.756µs[0m
+2023/02/15 10:03:07.606219 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:03:07.606386 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 2[0m
+2023/02/15 10:03:07.606479 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 156.762µs[0m
+2023/02/15 10:03:07.607119 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:03:07.607262 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 3[0m
+2023/02/15 10:03:07.607352 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 139.699µs[0m
+2023/02/15 10:03:07.607935 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
+2023/02/15 10:03:07.608079 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 4[0m
+2023/02/15 10:03:07.608173 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 135.563µs[0m
+2023/02/15 10:03:07.608766 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
+2023/02/15 10:03:07.608897 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 5[0m
+2023/02/15 10:03:07.608982 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 125.623µs[0m
+2023/02/15 10:03:10.027624 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 113, type CompactLog, truncatedIndex 106[0m
+2023/02/15 10:03:10.735265 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 113, type CompactLog, truncatedIndex 106[0m
+2023/02/15 10:03:10.785051 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 113, type CompactLog, truncatedIndex 106[0m
+2023/02/15 10:03:10.786818 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 113, type CompactLog, truncatedIndex 106[0m
+2023/02/15 10:03:10.950152 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 113, type CompactLog, truncatedIndex 106[0m
+2023/02/15 10:03:10.992281 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 131, type CompactLog, truncatedIndex 111[0m
+2023/02/15 10:03:11.459610 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 131, type CompactLog, truncatedIndex 111[0m
+2023/02/15 10:03:11.514420 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 131, type CompactLog, truncatedIndex 111[0m
+2023/02/15 10:03:11.556953 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 131, type CompactLog, truncatedIndex 111[0m
+2023/02/15 10:03:11.571199 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 131, type CompactLog, truncatedIndex 111[0m
+2023/02/15 10:03:33.607584 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 232, type CompactLog, truncatedIndex 221[0m
+2023/02/15 10:03:33.652643 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 232, type CompactLog, truncatedIndex 221[0m
+2023/02/15 10:03:33.674576 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 232, type CompactLog, truncatedIndex 221[0m
+2023/02/15 10:03:33.674617 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 232, type CompactLog, truncatedIndex 221[0m
+2023/02/15 10:03:33.716199 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 232, type CompactLog, truncatedIndex 221[0m
+2023/02/15 10:03:33.717121 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 247, type CompactLog, truncatedIndex 230[0m
+2023/02/15 10:03:33.758692 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 247, type CompactLog, truncatedIndex 230[0m
+2023/02/15 10:03:33.802374 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 247, type CompactLog, truncatedIndex 230[0m
+2023/02/15 10:03:33.802405 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 247, type CompactLog, truncatedIndex 230[0m
+2023/02/15 10:03:33.813530 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 247, type CompactLog, truncatedIndex 230[0m
+2023/02/15 10:03:33.965511 test_test.go:257: [0;33m[warning] shutdown servers
 [0m
-2023/02/13 11:24:06.933283 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:24:06.962152 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:24:06.964449 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1872, type CompactLog, truncatedIndex 1870[0m
-2023/02/13 11:24:06.967009 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1872, type CompactLog, truncatedIndex 1870[0m
-2023/02/13 11:24:06.969725 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1872, type CompactLog, truncatedIndex 1870[0m
-2023/02/13 11:24:06.969768 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1872, type CompactLog, truncatedIndex 1870[0m
-2023/02/13 11:24:06.975368 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:24:06.980314 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:24:06.980376 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:24:07.480499 test_test.go:264: [0;33m[warning] restart servers
+2023/02/15 10:03:33.965538 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
+2023/02/15 10:03:34.066845 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
+2023/02/15 10:03:34.080098 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
+2023/02/15 10:03:34.092123 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
+2023/02/15 10:03:34.104281 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
+2023/02/15 10:03:34.605776 test_test.go:264: [0;33m[warning] restart servers
 [0m
-2023/02/13 11:24:07.481141 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:24:07.481329 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 1[0m
-2023/02/13 11:24:07.481518 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 264.675µs[0m
-2023/02/13 11:24:07.482070 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:24:07.482191 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 2[0m
-2023/02/13 11:24:07.482286 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 142.999µs[0m
-2023/02/13 11:24:07.482897 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:24:07.483014 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 3[0m
-2023/02/13 11:24:07.483115 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 144.309µs[0m
-2023/02/13 11:24:07.483693 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:24:07.483806 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 4[0m
-2023/02/13 11:24:07.483925 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 163.612µs[0m
-2023/02/13 11:24:07.484536 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:24:07.484669 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 5[0m
-2023/02/13 11:24:07.484743 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 133.702µs[0m
-2023/02/13 11:24:08.614458 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1872, type CompactLog, truncatedIndex 1870[0m
-2023/02/13 11:24:10.540177 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1973, type CompactLog, truncatedIndex 1971[0m
-2023/02/13 11:24:10.541101 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1973, type CompactLog, truncatedIndex 1971[0m
-2023/02/13 11:24:10.541763 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1973, type CompactLog, truncatedIndex 1971[0m
-2023/02/13 11:24:10.541846 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1973, type CompactLog, truncatedIndex 1971[0m
-2023/02/13 11:24:10.541848 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1973, type CompactLog, truncatedIndex 1971[0m
-2023/02/13 11:24:12.511106 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2074, type CompactLog, truncatedIndex 2072[0m
-2023/02/13 11:24:12.516132 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2074, type CompactLog, truncatedIndex 2072[0m
-2023/02/13 11:24:12.516186 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2074, type CompactLog, truncatedIndex 2072[0m
-2023/02/13 11:24:12.516244 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2074, type CompactLog, truncatedIndex 2072[0m
-2023/02/13 11:24:12.521684 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2074, type CompactLog, truncatedIndex 2072[0m
-2023/02/13 11:24:14.503166 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2175, type CompactLog, truncatedIndex 2172[0m
-2023/02/13 11:24:14.508105 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2175, type CompactLog, truncatedIndex 2172[0m
-2023/02/13 11:24:14.510859 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2175, type CompactLog, truncatedIndex 2172[0m
-2023/02/13 11:24:14.513735 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2175, type CompactLog, truncatedIndex 2172[0m
-2023/02/13 11:24:14.513769 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2175, type CompactLog, truncatedIndex 2172[0m
-2023/02/13 11:24:16.511042 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2276, type CompactLog, truncatedIndex 2274[0m
-2023/02/13 11:24:16.515519 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2276, type CompactLog, truncatedIndex 2274[0m
-2023/02/13 11:24:16.515612 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2276, type CompactLog, truncatedIndex 2274[0m
-2023/02/13 11:24:16.515666 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2276, type CompactLog, truncatedIndex 2274[0m
-2023/02/13 11:24:16.515674 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2276, type CompactLog, truncatedIndex 2274[0m
-2023/02/13 11:24:18.506953 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2377, type CompactLog, truncatedIndex 2374[0m
-2023/02/13 11:24:18.512193 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2377, type CompactLog, truncatedIndex 2374[0m
-2023/02/13 11:24:18.514994 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2377, type CompactLog, truncatedIndex 2374[0m
-2023/02/13 11:24:18.517856 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2377, type CompactLog, truncatedIndex 2374[0m
-2023/02/13 11:24:18.517905 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2377, type CompactLog, truncatedIndex 2374[0m
-2023/02/13 11:24:20.452227 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2477, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:24:20.454931 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2477, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:24:20.457415 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2477, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:24:20.457524 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2477, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:24:20.463206 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2477, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:24:22.452713 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2576, type CompactLog, truncatedIndex 2574[0m
-2023/02/13 11:24:22.455259 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2576, type CompactLog, truncatedIndex 2574[0m
-2023/02/13 11:24:22.457889 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2576, type CompactLog, truncatedIndex 2574[0m
-2023/02/13 11:24:22.457974 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2576, type CompactLog, truncatedIndex 2574[0m
-2023/02/13 11:24:22.457996 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2576, type CompactLog, truncatedIndex 2574[0m
-2023/02/13 11:24:24.456572 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2678, type CompactLog, truncatedIndex 2676[0m
-2023/02/13 11:24:24.459131 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2678, type CompactLog, truncatedIndex 2676[0m
-2023/02/13 11:24:24.461912 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2678, type CompactLog, truncatedIndex 2676[0m
-2023/02/13 11:24:24.461923 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2678, type CompactLog, truncatedIndex 2676[0m
-2023/02/13 11:24:24.461934 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2678, type CompactLog, truncatedIndex 2676[0m
-2023/02/13 11:24:26.411026 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:24:26.416039 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:24:26.418855 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:24:26.421601 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:24:26.421684 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:24:28.683210 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2892, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:24:28.696036 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2892, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:24:28.701631 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2892, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:24:28.701693 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2892, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:24:28.701710 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2892, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:24:28.936432 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2988, type CompactLog, truncatedIndex 2977[0m
-2023/02/13 11:24:28.946929 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2988, type CompactLog, truncatedIndex 2977[0m
-2023/02/13 11:24:28.947016 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2988, type CompactLog, truncatedIndex 2977[0m
-2023/02/13 11:24:28.947084 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2988, type CompactLog, truncatedIndex 2977[0m
-2023/02/13 11:24:28.949347 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2988, type CompactLog, truncatedIndex 2977[0m
-2023/02/13 11:24:29.186420 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3088, type CompactLog, truncatedIndex 3078[0m
-2023/02/13 11:24:29.191543 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3088, type CompactLog, truncatedIndex 3078[0m
-2023/02/13 11:24:29.196933 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3088, type CompactLog, truncatedIndex 3078[0m
-2023/02/13 11:24:29.197060 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3088, type CompactLog, truncatedIndex 3078[0m
-2023/02/13 11:24:29.202667 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3088, type CompactLog, truncatedIndex 3078[0m
-2023/02/13 11:24:29.499312 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3208, type CompactLog, truncatedIndex 3187[0m
-2023/02/13 11:24:29.510272 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3208, type CompactLog, truncatedIndex 3187[0m
-2023/02/13 11:24:29.513200 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3208, type CompactLog, truncatedIndex 3187[0m
-2023/02/13 11:24:29.513280 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3208, type CompactLog, truncatedIndex 3187[0m
-2023/02/13 11:24:29.521854 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3208, type CompactLog, truncatedIndex 3187[0m
-2023/02/13 11:24:29.532639 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3222, type CompactLog, truncatedIndex 3199[0m
-2023/02/13 11:24:29.540961 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3222, type CompactLog, truncatedIndex 3199[0m
-2023/02/13 11:24:29.553761 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3222, type CompactLog, truncatedIndex 3199[0m
-2023/02/13 11:24:29.556666 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3222, type CompactLog, truncatedIndex 3199[0m
-2023/02/13 11:24:29.559489 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3222, type CompactLog, truncatedIndex 3199[0m
-2023/02/13 11:24:29.788231 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3315, type CompactLog, truncatedIndex 3301[0m
-2023/02/13 11:24:29.804106 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3315, type CompactLog, truncatedIndex 3301[0m
-2023/02/13 11:24:29.804199 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3315, type CompactLog, truncatedIndex 3301[0m
-2023/02/13 11:24:29.806469 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3315, type CompactLog, truncatedIndex 3301[0m
-2023/02/13 11:24:29.809295 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3315, type CompactLog, truncatedIndex 3301[0m
-2023/02/13 11:24:30.040269 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3413, type CompactLog, truncatedIndex 3402[0m
-2023/02/13 11:24:30.053600 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3413, type CompactLog, truncatedIndex 3402[0m
-2023/02/13 11:24:30.053639 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3413, type CompactLog, truncatedIndex 3402[0m
-2023/02/13 11:24:30.053720 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3413, type CompactLog, truncatedIndex 3402[0m
-2023/02/13 11:24:30.059319 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3413, type CompactLog, truncatedIndex 3402[0m
-2023/02/13 11:24:30.088763 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3434, type CompactLog, truncatedIndex 3411[0m
-2023/02/13 11:24:30.101755 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3434, type CompactLog, truncatedIndex 3411[0m
-2023/02/13 11:24:30.101803 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3434, type CompactLog, truncatedIndex 3411[0m
-2023/02/13 11:24:30.104371 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3434, type CompactLog, truncatedIndex 3411[0m
-2023/02/13 11:24:30.104453 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3434, type CompactLog, truncatedIndex 3411[0m
-2023/02/13 11:24:30.336381 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3544, type CompactLog, truncatedIndex 3524[0m
-2023/02/13 11:24:30.341717 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3544, type CompactLog, truncatedIndex 3524[0m
-2023/02/13 11:24:30.341884 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3544, type CompactLog, truncatedIndex 3524[0m
-2023/02/13 11:24:30.344698 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3544, type CompactLog, truncatedIndex 3524[0m
-2023/02/13 11:24:30.344704 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3544, type CompactLog, truncatedIndex 3524[0m
-2023/02/13 11:24:30.649621 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3656, type CompactLog, truncatedIndex 3645[0m
-2023/02/13 11:24:30.660326 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3656, type CompactLog, truncatedIndex 3645[0m
-2023/02/13 11:24:30.663139 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3656, type CompactLog, truncatedIndex 3645[0m
-2023/02/13 11:24:30.671450 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3656, type CompactLog, truncatedIndex 3645[0m
-2023/02/13 11:24:30.671497 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3656, type CompactLog, truncatedIndex 3645[0m
-2023/02/13 11:24:30.688036 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3675, type CompactLog, truncatedIndex 3654[0m
-2023/02/13 11:24:30.698816 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3675, type CompactLog, truncatedIndex 3654[0m
-2023/02/13 11:24:30.704256 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3675, type CompactLog, truncatedIndex 3654[0m
-2023/02/13 11:24:30.704256 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3675, type CompactLog, truncatedIndex 3654[0m
-2023/02/13 11:24:30.709657 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3675, type CompactLog, truncatedIndex 3654[0m
-2023/02/13 11:24:30.947622 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3774, type CompactLog, truncatedIndex 3756[0m
-2023/02/13 11:24:30.963957 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3774, type CompactLog, truncatedIndex 3756[0m
-2023/02/13 11:24:30.964057 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3774, type CompactLog, truncatedIndex 3756[0m
-2023/02/13 11:24:30.964063 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3774, type CompactLog, truncatedIndex 3756[0m
-2023/02/13 11:24:30.969508 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3774, type CompactLog, truncatedIndex 3756[0m
-2023/02/13 11:24:31.242502 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3889, type CompactLog, truncatedIndex 3868[0m
-2023/02/13 11:24:31.252461 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3889, type CompactLog, truncatedIndex 3868[0m
-2023/02/13 11:24:31.252468 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3889, type CompactLog, truncatedIndex 3868[0m
-2023/02/13 11:24:31.257908 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3889, type CompactLog, truncatedIndex 3868[0m
-2023/02/13 11:24:31.257922 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3889, type CompactLog, truncatedIndex 3868[0m
-2023/02/13 11:24:31.481336 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 3995, type CompactLog, truncatedIndex 3979[0m
-2023/02/13 11:24:31.488887 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 3995, type CompactLog, truncatedIndex 3979[0m
-2023/02/13 11:24:31.488938 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 3995, type CompactLog, truncatedIndex 3979[0m
-2023/02/13 11:24:31.506139 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 3995, type CompactLog, truncatedIndex 3979[0m
-2023/02/13 11:24:31.512562 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 3995, type CompactLog, truncatedIndex 3979[0m
-2023/02/13 11:24:31.742776 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4092, type CompactLog, truncatedIndex 4080[0m
-2023/02/13 11:24:31.753507 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4092, type CompactLog, truncatedIndex 4080[0m
-2023/02/13 11:24:31.756246 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4092, type CompactLog, truncatedIndex 4080[0m
-2023/02/13 11:24:31.759039 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4092, type CompactLog, truncatedIndex 4080[0m
-2023/02/13 11:24:31.759047 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4092, type CompactLog, truncatedIndex 4080[0m
-2023/02/13 11:24:31.775071 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4113, type CompactLog, truncatedIndex 4090[0m
-2023/02/13 11:24:31.784826 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4113, type CompactLog, truncatedIndex 4090[0m
-2023/02/13 11:24:31.790541 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4113, type CompactLog, truncatedIndex 4090[0m
-2023/02/13 11:24:31.792850 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4113, type CompactLog, truncatedIndex 4090[0m
-2023/02/13 11:24:31.795406 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4113, type CompactLog, truncatedIndex 4090[0m
-2023/02/13 11:24:32.039616 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4214, type CompactLog, truncatedIndex 4202[0m
-2023/02/13 11:24:32.047688 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4214, type CompactLog, truncatedIndex 4202[0m
-2023/02/13 11:24:32.050243 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4214, type CompactLog, truncatedIndex 4202[0m
-2023/02/13 11:24:32.052769 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4214, type CompactLog, truncatedIndex 4202[0m
-2023/02/13 11:24:32.055603 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4214, type CompactLog, truncatedIndex 4202[0m
-2023/02/13 11:24:32.333248 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4327, type CompactLog, truncatedIndex 4305[0m
-2023/02/13 11:24:32.346589 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4327, type CompactLog, truncatedIndex 4305[0m
-2023/02/13 11:24:32.348946 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4327, type CompactLog, truncatedIndex 4305[0m
-2023/02/13 11:24:32.348962 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4327, type CompactLog, truncatedIndex 4305[0m
-2023/02/13 11:24:32.351839 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4327, type CompactLog, truncatedIndex 4305[0m
-2023/02/13 11:24:32.643374 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4431, type CompactLog, truncatedIndex 4417[0m
-2023/02/13 11:24:32.648447 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4431, type CompactLog, truncatedIndex 4417[0m
-2023/02/13 11:24:32.659579 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4431, type CompactLog, truncatedIndex 4417[0m
-2023/02/13 11:24:32.665005 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4431, type CompactLog, truncatedIndex 4417[0m
-2023/02/13 11:24:32.665018 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4431, type CompactLog, truncatedIndex 4417[0m
-2023/02/13 11:24:32.681201 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4452, type CompactLog, truncatedIndex 4429[0m
-2023/02/13 11:24:32.693299 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4452, type CompactLog, truncatedIndex 4429[0m
-2023/02/13 11:24:32.693358 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4452, type CompactLog, truncatedIndex 4429[0m
-2023/02/13 11:24:32.693367 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4452, type CompactLog, truncatedIndex 4429[0m
-2023/02/13 11:24:32.696190 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4452, type CompactLog, truncatedIndex 4429[0m
-2023/02/13 11:24:32.983178 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4542, type CompactLog, truncatedIndex 4531[0m
-2023/02/13 11:24:33.001743 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4542, type CompactLog, truncatedIndex 4531[0m
-2023/02/13 11:24:33.001744 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4542, type CompactLog, truncatedIndex 4531[0m
-2023/02/13 11:24:33.001821 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4542, type CompactLog, truncatedIndex 4531[0m
-2023/02/13 11:24:33.007348 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4542, type CompactLog, truncatedIndex 4531[0m
-2023/02/13 11:24:33.285573 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4662, type CompactLog, truncatedIndex 4640[0m
-2023/02/13 11:24:33.296709 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4662, type CompactLog, truncatedIndex 4640[0m
-2023/02/13 11:24:33.296784 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4662, type CompactLog, truncatedIndex 4640[0m
-2023/02/13 11:24:33.302028 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4662, type CompactLog, truncatedIndex 4640[0m
-2023/02/13 11:24:33.302135 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4662, type CompactLog, truncatedIndex 4640[0m
-2023/02/13 11:24:33.560562 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4778, type CompactLog, truncatedIndex 4761[0m
-2023/02/13 11:24:33.560646 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:24:33.560663 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:24:33.573829 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4778, type CompactLog, truncatedIndex 4761[0m
-2023/02/13 11:24:33.583901 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4778, type CompactLog, truncatedIndex 4761[0m
-2023/02/13 11:24:33.583915 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4778, type CompactLog, truncatedIndex 4761[0m
-2023/02/13 11:24:33.583905 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4778, type CompactLog, truncatedIndex 4761[0m
-2023/02/13 11:24:33.595120 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:24:33.595162 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:24:33.600200 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:24:33.600257 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:24:34.101247 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:24:34.101833 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:24:34.102029 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 1[0m
-2023/02/13 11:24:34.102160 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 211.966µs[0m
-2023/02/13 11:24:34.102775 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:24:34.102911 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 2[0m
-2023/02/13 11:24:34.103038 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 175.118µs[0m
-2023/02/13 11:24:34.103621 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:24:34.103747 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 3[0m
-2023/02/13 11:24:34.103860 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 162.757µs[0m
-2023/02/13 11:24:34.104472 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:24:34.104588 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 4[0m
-2023/02/13 11:24:34.104662 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 122.149µs[0m
-2023/02/13 11:24:34.105094 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:24:34.105219 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 5[0m
-2023/02/13 11:24:34.105324 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 158.425µs[0m
-2023/02/13 11:24:36.474131 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4864, type CompactLog, truncatedIndex 4862[0m
-2023/02/13 11:24:36.476903 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4864, type CompactLog, truncatedIndex 4862[0m
-2023/02/13 11:24:36.476937 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4864, type CompactLog, truncatedIndex 4862[0m
-2023/02/13 11:24:36.479429 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4864, type CompactLog, truncatedIndex 4862[0m
-2023/02/13 11:24:36.479489 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4864, type CompactLog, truncatedIndex 4862[0m
-2023/02/13 11:24:38.524337 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 4965, type CompactLog, truncatedIndex 4962[0m
-2023/02/13 11:24:38.529453 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 4965, type CompactLog, truncatedIndex 4962[0m
-2023/02/13 11:24:38.532343 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 4965, type CompactLog, truncatedIndex 4962[0m
-2023/02/13 11:24:38.535007 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 4965, type CompactLog, truncatedIndex 4962[0m
-2023/02/13 11:24:38.537783 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 4965, type CompactLog, truncatedIndex 4962[0m
-2023/02/13 11:24:40.470096 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5065, type CompactLog, truncatedIndex 5062[0m
-2023/02/13 11:24:40.475424 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5065, type CompactLog, truncatedIndex 5062[0m
-2023/02/13 11:24:40.478064 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5065, type CompactLog, truncatedIndex 5062[0m
-2023/02/13 11:24:40.478095 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5065, type CompactLog, truncatedIndex 5062[0m
-2023/02/13 11:24:40.478153 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5065, type CompactLog, truncatedIndex 5062[0m
-2023/02/13 11:24:42.371047 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5166, type CompactLog, truncatedIndex 5163[0m
-2023/02/13 11:24:42.373641 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5166, type CompactLog, truncatedIndex 5163[0m
-2023/02/13 11:24:42.376325 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5166, type CompactLog, truncatedIndex 5163[0m
-2023/02/13 11:24:42.376392 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5166, type CompactLog, truncatedIndex 5163[0m
-2023/02/13 11:24:42.376393 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5166, type CompactLog, truncatedIndex 5163[0m
-2023/02/13 11:24:44.374251 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5266, type CompactLog, truncatedIndex 5264[0m
-2023/02/13 11:24:44.379296 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5266, type CompactLog, truncatedIndex 5264[0m
-2023/02/13 11:24:44.379314 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5266, type CompactLog, truncatedIndex 5264[0m
-2023/02/13 11:24:44.379308 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5266, type CompactLog, truncatedIndex 5264[0m
-2023/02/13 11:24:44.384778 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5266, type CompactLog, truncatedIndex 5264[0m
-2023/02/13 11:24:46.373766 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5368, type CompactLog, truncatedIndex 5365[0m
-2023/02/13 11:24:46.376461 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5368, type CompactLog, truncatedIndex 5365[0m
-2023/02/13 11:24:46.376560 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5368, type CompactLog, truncatedIndex 5365[0m
-2023/02/13 11:24:46.379003 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5368, type CompactLog, truncatedIndex 5365[0m
-2023/02/13 11:24:46.379087 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5368, type CompactLog, truncatedIndex 5365[0m
-2023/02/13 11:24:48.275440 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5469, type CompactLog, truncatedIndex 5466[0m
-2023/02/13 11:24:48.280518 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5469, type CompactLog, truncatedIndex 5466[0m
-2023/02/13 11:24:48.283234 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5469, type CompactLog, truncatedIndex 5466[0m
-2023/02/13 11:24:48.286090 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5469, type CompactLog, truncatedIndex 5466[0m
-2023/02/13 11:24:48.286116 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5469, type CompactLog, truncatedIndex 5466[0m
-2023/02/13 11:24:50.375289 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5571, type CompactLog, truncatedIndex 5568[0m
-2023/02/13 11:24:50.380998 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5571, type CompactLog, truncatedIndex 5568[0m
-2023/02/13 11:24:50.381026 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5571, type CompactLog, truncatedIndex 5568[0m
-2023/02/13 11:24:50.381113 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5571, type CompactLog, truncatedIndex 5568[0m
-2023/02/13 11:24:50.386611 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5571, type CompactLog, truncatedIndex 5568[0m
-2023/02/13 11:24:52.372267 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5671, type CompactLog, truncatedIndex 5668[0m
-2023/02/13 11:24:52.380610 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5671, type CompactLog, truncatedIndex 5668[0m
-2023/02/13 11:24:52.380657 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5671, type CompactLog, truncatedIndex 5668[0m
-2023/02/13 11:24:52.380694 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5671, type CompactLog, truncatedIndex 5668[0m
-2023/02/13 11:24:52.386339 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5671, type CompactLog, truncatedIndex 5668[0m
-2023/02/13 11:24:55.350263 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5802, type CompactLog, truncatedIndex 5786[0m
-2023/02/13 11:24:55.363286 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5802, type CompactLog, truncatedIndex 5786[0m
-2023/02/13 11:24:55.363352 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5802, type CompactLog, truncatedIndex 5786[0m
-2023/02/13 11:24:55.365736 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5802, type CompactLog, truncatedIndex 5786[0m
-2023/02/13 11:24:55.365816 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5802, type CompactLog, truncatedIndex 5786[0m
-2023/02/13 11:24:55.608936 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5895, type CompactLog, truncatedIndex 5888[0m
-2023/02/13 11:24:55.621872 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5895, type CompactLog, truncatedIndex 5888[0m
-2023/02/13 11:24:55.621969 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5895, type CompactLog, truncatedIndex 5888[0m
-2023/02/13 11:24:55.624496 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5895, type CompactLog, truncatedIndex 5888[0m
-2023/02/13 11:24:55.631320 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5895, type CompactLog, truncatedIndex 5888[0m
-2023/02/13 11:24:55.657159 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 5916, type CompactLog, truncatedIndex 5893[0m
-2023/02/13 11:24:55.666793 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 5916, type CompactLog, truncatedIndex 5893[0m
-2023/02/13 11:24:55.666793 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 5916, type CompactLog, truncatedIndex 5893[0m
-2023/02/13 11:24:55.666832 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 5916, type CompactLog, truncatedIndex 5893[0m
-2023/02/13 11:24:55.669820 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 5916, type CompactLog, truncatedIndex 5893[0m
-2023/02/13 11:24:55.901456 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6018, type CompactLog, truncatedIndex 5996[0m
-2023/02/13 11:24:55.912475 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6018, type CompactLog, truncatedIndex 5996[0m
-2023/02/13 11:24:55.917704 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6018, type CompactLog, truncatedIndex 5996[0m
-2023/02/13 11:24:55.917717 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6018, type CompactLog, truncatedIndex 5996[0m
-2023/02/13 11:24:55.923343 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6018, type CompactLog, truncatedIndex 5996[0m
-2023/02/13 11:24:56.207536 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6123, type CompactLog, truncatedIndex 6109[0m
-2023/02/13 11:24:56.217737 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6123, type CompactLog, truncatedIndex 6109[0m
-2023/02/13 11:24:56.217762 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6123, type CompactLog, truncatedIndex 6109[0m
-2023/02/13 11:24:56.217749 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6123, type CompactLog, truncatedIndex 6109[0m
-2023/02/13 11:24:56.223164 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6123, type CompactLog, truncatedIndex 6109[0m
-2023/02/13 11:24:56.241446 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6142, type CompactLog, truncatedIndex 6119[0m
-2023/02/13 11:24:56.254208 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6142, type CompactLog, truncatedIndex 6119[0m
-2023/02/13 11:24:56.254208 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6142, type CompactLog, truncatedIndex 6119[0m
-2023/02/13 11:24:56.256491 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6142, type CompactLog, truncatedIndex 6119[0m
-2023/02/13 11:24:56.264136 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6142, type CompactLog, truncatedIndex 6119[0m
-2023/02/13 11:24:56.451470 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6234, type CompactLog, truncatedIndex 6221[0m
-2023/02/13 11:24:56.462344 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6234, type CompactLog, truncatedIndex 6221[0m
-2023/02/13 11:24:56.462359 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6234, type CompactLog, truncatedIndex 6221[0m
-2023/02/13 11:24:56.464972 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6234, type CompactLog, truncatedIndex 6221[0m
-2023/02/13 11:24:56.479347 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6234, type CompactLog, truncatedIndex 6221[0m
-2023/02/13 11:24:56.761001 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6344, type CompactLog, truncatedIndex 6332[0m
-2023/02/13 11:24:56.771183 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6344, type CompactLog, truncatedIndex 6332[0m
-2023/02/13 11:24:56.771224 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6344, type CompactLog, truncatedIndex 6332[0m
-2023/02/13 11:24:56.785886 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6344, type CompactLog, truncatedIndex 6332[0m
-2023/02/13 11:24:56.786069 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6344, type CompactLog, truncatedIndex 6332[0m
-2023/02/13 11:24:56.815231 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6365, type CompactLog, truncatedIndex 6342[0m
-2023/02/13 11:24:56.820125 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6365, type CompactLog, truncatedIndex 6342[0m
-2023/02/13 11:24:56.820204 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6365, type CompactLog, truncatedIndex 6342[0m
-2023/02/13 11:24:56.822357 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6365, type CompactLog, truncatedIndex 6342[0m
-2023/02/13 11:24:56.830528 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6365, type CompactLog, truncatedIndex 6342[0m
-2023/02/13 11:24:57.055331 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6462, type CompactLog, truncatedIndex 6444[0m
-2023/02/13 11:24:57.063203 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6462, type CompactLog, truncatedIndex 6444[0m
-2023/02/13 11:24:57.063295 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6462, type CompactLog, truncatedIndex 6444[0m
-2023/02/13 11:24:57.065912 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6462, type CompactLog, truncatedIndex 6444[0m
-2023/02/13 11:24:57.086903 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6462, type CompactLog, truncatedIndex 6444[0m
-2023/02/13 11:24:57.314322 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6567, type CompactLog, truncatedIndex 6555[0m
-2023/02/13 11:24:57.319191 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6567, type CompactLog, truncatedIndex 6555[0m
-2023/02/13 11:24:57.324734 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6567, type CompactLog, truncatedIndex 6555[0m
-2023/02/13 11:24:57.324807 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6567, type CompactLog, truncatedIndex 6555[0m
-2023/02/13 11:24:57.324812 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6567, type CompactLog, truncatedIndex 6555[0m
-2023/02/13 11:24:57.355525 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6586, type CompactLog, truncatedIndex 6565[0m
-2023/02/13 11:24:57.363186 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6586, type CompactLog, truncatedIndex 6565[0m
-2023/02/13 11:24:57.370597 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6586, type CompactLog, truncatedIndex 6565[0m
-2023/02/13 11:24:57.373345 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6586, type CompactLog, truncatedIndex 6565[0m
-2023/02/13 11:24:57.375805 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6586, type CompactLog, truncatedIndex 6565[0m
-2023/02/13 11:24:57.612195 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6679, type CompactLog, truncatedIndex 6667[0m
-2023/02/13 11:24:57.617520 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6679, type CompactLog, truncatedIndex 6667[0m
-2023/02/13 11:24:57.625990 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6679, type CompactLog, truncatedIndex 6667[0m
-2023/02/13 11:24:57.625999 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6679, type CompactLog, truncatedIndex 6667[0m
-2023/02/13 11:24:57.626090 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6679, type CompactLog, truncatedIndex 6667[0m
-2023/02/13 11:24:57.857384 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6786, type CompactLog, truncatedIndex 6768[0m
-2023/02/13 11:24:57.875320 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6786, type CompactLog, truncatedIndex 6768[0m
-2023/02/13 11:24:57.877900 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6786, type CompactLog, truncatedIndex 6768[0m
-2023/02/13 11:24:57.877901 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6786, type CompactLog, truncatedIndex 6768[0m
-2023/02/13 11:24:57.891423 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6786, type CompactLog, truncatedIndex 6768[0m
-2023/02/13 11:24:58.102892 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 6891, type CompactLog, truncatedIndex 6869[0m
-2023/02/13 11:24:58.113560 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 6891, type CompactLog, truncatedIndex 6869[0m
-2023/02/13 11:24:58.113635 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 6891, type CompactLog, truncatedIndex 6869[0m
-2023/02/13 11:24:58.113662 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 6891, type CompactLog, truncatedIndex 6869[0m
-2023/02/13 11:24:58.113644 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 6891, type CompactLog, truncatedIndex 6869[0m
-2023/02/13 11:24:58.398256 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7005, type CompactLog, truncatedIndex 6984[0m
-2023/02/13 11:24:58.402823 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7005, type CompactLog, truncatedIndex 6984[0m
-2023/02/13 11:24:58.404756 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7005, type CompactLog, truncatedIndex 6984[0m
-2023/02/13 11:24:58.404793 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7005, type CompactLog, truncatedIndex 6984[0m
-2023/02/13 11:24:58.407501 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7005, type CompactLog, truncatedIndex 6984[0m
-2023/02/13 11:24:58.657197 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7105, type CompactLog, truncatedIndex 7085[0m
-2023/02/13 11:24:58.665872 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7105, type CompactLog, truncatedIndex 7085[0m
-2023/02/13 11:24:58.668799 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7105, type CompactLog, truncatedIndex 7085[0m
-2023/02/13 11:24:58.671525 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7105, type CompactLog, truncatedIndex 7085[0m
-2023/02/13 11:24:58.674455 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7105, type CompactLog, truncatedIndex 7085[0m
-2023/02/13 11:24:58.956301 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7213, type CompactLog, truncatedIndex 7193[0m
-2023/02/13 11:24:58.961628 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7213, type CompactLog, truncatedIndex 7193[0m
-2023/02/13 11:24:58.972822 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7213, type CompactLog, truncatedIndex 7193[0m
-2023/02/13 11:24:58.972883 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7213, type CompactLog, truncatedIndex 7193[0m
-2023/02/13 11:24:58.975342 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7213, type CompactLog, truncatedIndex 7193[0m
-2023/02/13 11:24:59.208461 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7309, type CompactLog, truncatedIndex 7294[0m
-2023/02/13 11:24:59.214838 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7309, type CompactLog, truncatedIndex 7294[0m
-2023/02/13 11:24:59.219957 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7309, type CompactLog, truncatedIndex 7294[0m
-2023/02/13 11:24:59.220034 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7309, type CompactLog, truncatedIndex 7294[0m
-2023/02/13 11:24:59.220071 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7309, type CompactLog, truncatedIndex 7294[0m
-2023/02/13 11:24:59.510963 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7423, type CompactLog, truncatedIndex 7408[0m
-2023/02/13 11:24:59.521502 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7423, type CompactLog, truncatedIndex 7408[0m
-2023/02/13 11:24:59.532137 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7423, type CompactLog, truncatedIndex 7408[0m
-2023/02/13 11:24:59.532216 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7423, type CompactLog, truncatedIndex 7408[0m
-2023/02/13 11:24:59.534822 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7423, type CompactLog, truncatedIndex 7408[0m
-2023/02/13 11:24:59.798069 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7536, type CompactLog, truncatedIndex 7516[0m
-2023/02/13 11:24:59.803525 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7536, type CompactLog, truncatedIndex 7516[0m
-2023/02/13 11:24:59.811780 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7536, type CompactLog, truncatedIndex 7516[0m
-2023/02/13 11:24:59.811816 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7536, type CompactLog, truncatedIndex 7516[0m
-2023/02/13 11:24:59.814351 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7536, type CompactLog, truncatedIndex 7516[0m
-2023/02/13 11:25:00.043859 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7639, type CompactLog, truncatedIndex 7617[0m
-2023/02/13 11:25:00.062226 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7639, type CompactLog, truncatedIndex 7617[0m
-2023/02/13 11:25:00.062300 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7639, type CompactLog, truncatedIndex 7617[0m
-2023/02/13 11:25:00.064913 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7639, type CompactLog, truncatedIndex 7617[0m
-2023/02/13 11:25:00.067870 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7639, type CompactLog, truncatedIndex 7617[0m
-2023/02/13 11:25:00.293345 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:25:00.293378 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:25:00.298323 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:25:00.308312 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:25:00.310802 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:25:00.313170 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:25:00.815862 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:25:00.816543 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:25:00.816759 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 1[0m
-2023/02/13 11:25:00.816964 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 320.844µs[0m
-2023/02/13 11:25:00.817557 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:25:00.817694 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 2[0m
-2023/02/13 11:25:00.817899 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 258.38µs[0m
-2023/02/13 11:25:00.818527 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:25:00.818651 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 3[0m
-2023/02/13 11:25:00.818856 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 250.583µs[0m
-2023/02/13 11:25:00.819547 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:25:00.819672 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 4[0m
-2023/02/13 11:25:00.819852 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 232.166µs[0m
-2023/02/13 11:25:00.820436 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:25:00.820516 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 >  create peer with ID 5[0m
-2023/02/13 11:25:00.820635 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 148.416µs[0m
-2023/02/13 11:25:01.487982 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7732, type CompactLog, truncatedIndex 7729[0m
-2023/02/13 11:25:01.498188 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7732, type CompactLog, truncatedIndex 7729[0m
-2023/02/13 11:25:01.498254 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7732, type CompactLog, truncatedIndex 7729[0m
-2023/02/13 11:25:01.498258 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7732, type CompactLog, truncatedIndex 7729[0m
-2023/02/13 11:25:01.503764 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7732, type CompactLog, truncatedIndex 7729[0m
-2023/02/13 11:25:03.539992 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7833, type CompactLog, truncatedIndex 7830[0m
-2023/02/13 11:25:03.544979 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7833, type CompactLog, truncatedIndex 7830[0m
-2023/02/13 11:25:03.550308 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7833, type CompactLog, truncatedIndex 7830[0m
-2023/02/13 11:25:03.550482 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7833, type CompactLog, truncatedIndex 7830[0m
-2023/02/13 11:25:03.555819 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7833, type CompactLog, truncatedIndex 7830[0m
-2023/02/13 11:25:05.547366 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 7934, type CompactLog, truncatedIndex 7932[0m
-2023/02/13 11:25:05.552599 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 7934, type CompactLog, truncatedIndex 7932[0m
-2023/02/13 11:25:05.552608 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 7934, type CompactLog, truncatedIndex 7932[0m
-2023/02/13 11:25:05.558167 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 7934, type CompactLog, truncatedIndex 7932[0m
-2023/02/13 11:25:05.558209 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 7934, type CompactLog, truncatedIndex 7932[0m
-2023/02/13 11:25:07.529521 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8036, type CompactLog, truncatedIndex 8033[0m
-2023/02/13 11:25:07.532775 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8036, type CompactLog, truncatedIndex 8033[0m
-2023/02/13 11:25:07.533344 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8036, type CompactLog, truncatedIndex 8033[0m
-2023/02/13 11:25:07.533365 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8036, type CompactLog, truncatedIndex 8033[0m
-2023/02/13 11:25:07.533368 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8036, type CompactLog, truncatedIndex 8033[0m
-2023/02/13 11:25:09.544382 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8137, type CompactLog, truncatedIndex 8135[0m
-2023/02/13 11:25:09.547099 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8137, type CompactLog, truncatedIndex 8135[0m
-2023/02/13 11:25:09.547113 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8137, type CompactLog, truncatedIndex 8135[0m
-2023/02/13 11:25:09.549593 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8137, type CompactLog, truncatedIndex 8135[0m
-2023/02/13 11:25:09.549654 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8137, type CompactLog, truncatedIndex 8135[0m
-2023/02/13 11:25:11.548286 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8240, type CompactLog, truncatedIndex 8237[0m
-2023/02/13 11:25:11.553801 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8240, type CompactLog, truncatedIndex 8237[0m
-2023/02/13 11:25:11.553845 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8240, type CompactLog, truncatedIndex 8237[0m
-2023/02/13 11:25:11.556608 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8240, type CompactLog, truncatedIndex 8237[0m
-2023/02/13 11:25:11.559447 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8240, type CompactLog, truncatedIndex 8237[0m
-2023/02/13 11:25:13.496607 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8340, type CompactLog, truncatedIndex 8337[0m
-2023/02/13 11:25:13.504290 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8340, type CompactLog, truncatedIndex 8337[0m
-2023/02/13 11:25:13.504338 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8340, type CompactLog, truncatedIndex 8337[0m
-2023/02/13 11:25:13.506728 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8340, type CompactLog, truncatedIndex 8337[0m
-2023/02/13 11:25:13.506839 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8340, type CompactLog, truncatedIndex 8337[0m
-2023/02/13 11:25:15.441046 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8440, type CompactLog, truncatedIndex 8437[0m
-2023/02/13 11:25:15.446804 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8440, type CompactLog, truncatedIndex 8437[0m
-2023/02/13 11:25:15.449214 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8440, type CompactLog, truncatedIndex 8437[0m
-2023/02/13 11:25:15.451930 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8440, type CompactLog, truncatedIndex 8437[0m
-2023/02/13 11:25:15.454863 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8440, type CompactLog, truncatedIndex 8437[0m
-2023/02/13 11:25:17.438963 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8541, type CompactLog, truncatedIndex 8538[0m
-2023/02/13 11:25:17.444079 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8541, type CompactLog, truncatedIndex 8538[0m
-2023/02/13 11:25:17.444122 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8541, type CompactLog, truncatedIndex 8538[0m
-2023/02/13 11:25:17.449883 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8541, type CompactLog, truncatedIndex 8538[0m
-2023/02/13 11:25:17.449948 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8541, type CompactLog, truncatedIndex 8538[0m
-2023/02/13 11:25:19.439931 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8642, type CompactLog, truncatedIndex 8639[0m
-2023/02/13 11:25:19.445126 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8642, type CompactLog, truncatedIndex 8639[0m
-2023/02/13 11:25:19.447847 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8642, type CompactLog, truncatedIndex 8639[0m
-2023/02/13 11:25:19.450557 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8642, type CompactLog, truncatedIndex 8639[0m
-2023/02/13 11:25:19.450601 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8642, type CompactLog, truncatedIndex 8639[0m
-2023/02/13 11:25:21.387983 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 8741, type CompactLog, truncatedIndex 8739[0m
-2023/02/13 11:25:21.396078 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 8741, type CompactLog, truncatedIndex 8739[0m
-2023/02/13 11:25:21.396133 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 8741, type CompactLog, truncatedIndex 8739[0m
-2023/02/13 11:25:21.396174 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 8741, type CompactLog, truncatedIndex 8739[0m
-2023/02/13 11:25:21.401671 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 8741, type CompactLog, truncatedIndex 8739[0m
-2023/02/13 11:25:22.369099 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:25:22.369183 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:25:22.369242 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:25:22.369289 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:25:22.369325 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
---- PASS: TestSnapshotRecoverManyClients2C (82.59s)
-PASS
-ok  	github.com/pingcap-incubator/tinykv/kv/test_raftstore	82.691s
-GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestSnapshotUnreliable2C|| true
-=== RUN   TestSnapshotUnreliable2C
-2023/02/13 11:25:24.927394 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:25:24.927602 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 1[0m
-2023/02/13 11:25:24.927665 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 158.755µs[0m
-2023/02/13 11:25:24.928023 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:25:24.928091 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 2[0m
-2023/02/13 11:25:24.928178 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 112.822µs[0m
-2023/02/13 11:25:24.928476 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:25:24.928534 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 3[0m
-2023/02/13 11:25:24.928579 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 66.213µs[0m
-2023/02/13 11:25:24.928893 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:25:24.928964 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 4[0m
-2023/02/13 11:25:24.929009 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 69.498µs[0m
-2023/02/13 11:25:24.929326 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:25:24.929391 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 >  create peer with ID 5[0m
-2023/02/13 11:25:24.929443 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 75.833µs[0m
-2023/02/13 11:25:26.664336 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 121, type CompactLog, truncatedIndex 114[0m
-2023/02/13 11:25:26.677378 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 121, type CompactLog, truncatedIndex 114[0m
-2023/02/13 11:25:26.682703 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 121, type CompactLog, truncatedIndex 114[0m
-2023/02/13 11:25:26.682802 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 121, type CompactLog, truncatedIndex 114[0m
-2023/02/13 11:25:26.688482 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 121, type CompactLog, truncatedIndex 114[0m
-2023/02/13 11:25:27.359555 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 223, type CompactLog, truncatedIndex 216[0m
-2023/02/13 11:25:27.369865 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 223, type CompactLog, truncatedIndex 216[0m
-2023/02/13 11:25:27.369917 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 223, type CompactLog, truncatedIndex 216[0m
-2023/02/13 11:25:27.369929 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 223, type CompactLog, truncatedIndex 216[0m
-2023/02/13 11:25:27.372236 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 223, type CompactLog, truncatedIndex 216[0m
-2023/02/13 11:25:28.121037 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 327, type CompactLog, truncatedIndex 321[0m
-2023/02/13 11:25:28.132082 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 327, type CompactLog, truncatedIndex 321[0m
-2023/02/13 11:25:28.132125 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 327, type CompactLog, truncatedIndex 321[0m
-2023/02/13 11:25:28.140400 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 327, type CompactLog, truncatedIndex 321[0m
-2023/02/13 11:25:28.143085 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 327, type CompactLog, truncatedIndex 321[0m
-2023/02/13 11:25:28.861560 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 432, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:25:28.877362 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 432, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:25:28.879879 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 432, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:25:28.882863 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 432, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:25:28.894303 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 432, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:25:29.618413 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 534, type CompactLog, truncatedIndex 529[0m
-2023/02/13 11:25:29.625865 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 534, type CompactLog, truncatedIndex 529[0m
-2023/02/13 11:25:29.628876 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 534, type CompactLog, truncatedIndex 529[0m
-2023/02/13 11:25:29.639802 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 534, type CompactLog, truncatedIndex 529[0m
-2023/02/13 11:25:29.642292 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 534, type CompactLog, truncatedIndex 529[0m
-2023/02/13 11:25:30.723664 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 638, type CompactLog, truncatedIndex 632[0m
-2023/02/13 11:25:30.728482 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 638, type CompactLog, truncatedIndex 632[0m
-2023/02/13 11:25:30.731105 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 638, type CompactLog, truncatedIndex 632[0m
-2023/02/13 11:25:30.733812 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 638, type CompactLog, truncatedIndex 632[0m
-2023/02/13 11:25:30.770889 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 638, type CompactLog, truncatedIndex 632[0m
-2023/02/13 11:25:32.507834 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 735, type CompactLog, truncatedIndex 733[0m
-2023/02/13 11:25:32.510716 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 735, type CompactLog, truncatedIndex 733[0m
-2023/02/13 11:25:32.513478 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 735, type CompactLog, truncatedIndex 733[0m
-2023/02/13 11:25:32.516290 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 735, type CompactLog, truncatedIndex 733[0m
-2023/02/13 11:25:32.516295 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 735, type CompactLog, truncatedIndex 733[0m
-2023/02/13 11:25:34.502784 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 838, type CompactLog, truncatedIndex 835[0m
-2023/02/13 11:25:34.507735 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 838, type CompactLog, truncatedIndex 835[0m
-2023/02/13 11:25:34.507772 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 838, type CompactLog, truncatedIndex 835[0m
-2023/02/13 11:25:34.507826 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 838, type CompactLog, truncatedIndex 835[0m
-2023/02/13 11:25:34.513450 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 838, type CompactLog, truncatedIndex 835[0m
-2023/02/13 11:25:36.401234 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 937, type CompactLog, truncatedIndex 935[0m
-2023/02/13 11:25:36.403841 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 937, type CompactLog, truncatedIndex 935[0m
-2023/02/13 11:25:36.406564 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 937, type CompactLog, truncatedIndex 935[0m
-2023/02/13 11:25:36.406615 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 937, type CompactLog, truncatedIndex 935[0m
-2023/02/13 11:25:36.406609 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 937, type CompactLog, truncatedIndex 935[0m
-2023/02/13 11:25:38.332907 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1037, type CompactLog, truncatedIndex 1035[0m
-2023/02/13 11:25:38.344911 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1037, type CompactLog, truncatedIndex 1035[0m
-2023/02/13 11:25:38.345062 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1037, type CompactLog, truncatedIndex 1035[0m
-2023/02/13 11:25:38.348333 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1037, type CompactLog, truncatedIndex 1035[0m
-2023/02/13 11:25:38.348340 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1037, type CompactLog, truncatedIndex 1035[0m
-2023/02/13 11:25:40.315774 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1147, type CompactLog, truncatedIndex 1142[0m
-2023/02/13 11:25:40.328913 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1147, type CompactLog, truncatedIndex 1142[0m
-2023/02/13 11:25:40.331785 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1147, type CompactLog, truncatedIndex 1142[0m
-2023/02/13 11:25:40.331862 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1147, type CompactLog, truncatedIndex 1142[0m
-2023/02/13 11:25:40.342298 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1147, type CompactLog, truncatedIndex 1142[0m
-2023/02/13 11:25:41.015004 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1252, type CompactLog, truncatedIndex 1245[0m
-2023/02/13 11:25:41.022363 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1252, type CompactLog, truncatedIndex 1245[0m
-2023/02/13 11:25:41.032719 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1252, type CompactLog, truncatedIndex 1245[0m
-2023/02/13 11:25:41.032767 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1252, type CompactLog, truncatedIndex 1245[0m
-2023/02/13 11:25:41.038425 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1252, type CompactLog, truncatedIndex 1245[0m
-2023/02/13 11:25:41.715628 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1354, type CompactLog, truncatedIndex 1347[0m
-2023/02/13 11:25:41.723475 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1354, type CompactLog, truncatedIndex 1347[0m
-2023/02/13 11:25:41.739451 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1354, type CompactLog, truncatedIndex 1347[0m
-2023/02/13 11:25:41.742019 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1354, type CompactLog, truncatedIndex 1347[0m
-2023/02/13 11:25:41.744842 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1354, type CompactLog, truncatedIndex 1347[0m
-2023/02/13 11:25:42.513493 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1460, type CompactLog, truncatedIndex 1453[0m
-2023/02/13 11:25:42.518771 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1460, type CompactLog, truncatedIndex 1453[0m
-2023/02/13 11:25:42.524134 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1460, type CompactLog, truncatedIndex 1453[0m
-2023/02/13 11:25:42.536482 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1460, type CompactLog, truncatedIndex 1453[0m
-2023/02/13 11:25:42.536496 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1460, type CompactLog, truncatedIndex 1453[0m
-2023/02/13 11:25:43.272487 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1562, type CompactLog, truncatedIndex 1555[0m
-2023/02/13 11:25:43.274678 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1562, type CompactLog, truncatedIndex 1555[0m
-2023/02/13 11:25:43.277284 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1562, type CompactLog, truncatedIndex 1555[0m
-2023/02/13 11:25:43.277413 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1562, type CompactLog, truncatedIndex 1555[0m
-2023/02/13 11:25:43.277467 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1562, type CompactLog, truncatedIndex 1555[0m
-2023/02/13 11:25:44.070190 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1667, type CompactLog, truncatedIndex 1660[0m
-2023/02/13 11:25:44.082665 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1667, type CompactLog, truncatedIndex 1660[0m
-2023/02/13 11:25:44.082696 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1667, type CompactLog, truncatedIndex 1660[0m
-2023/02/13 11:25:44.084865 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1667, type CompactLog, truncatedIndex 1660[0m
-2023/02/13 11:25:44.105034 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1667, type CompactLog, truncatedIndex 1660[0m
-2023/02/13 11:25:47.746940 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1763, type CompactLog, truncatedIndex 1760[0m
-2023/02/13 11:25:47.754852 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1763, type CompactLog, truncatedIndex 1760[0m
-2023/02/13 11:25:47.762645 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1763, type CompactLog, truncatedIndex 1760[0m
-2023/02/13 11:25:47.764871 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1763, type CompactLog, truncatedIndex 1760[0m
-2023/02/13 11:25:47.764938 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1763, type CompactLog, truncatedIndex 1760[0m
-2023/02/13 11:25:49.794686 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1863, type CompactLog, truncatedIndex 1860[0m
-2023/02/13 11:25:49.805332 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1863, type CompactLog, truncatedIndex 1860[0m
-2023/02/13 11:25:49.805346 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1863, type CompactLog, truncatedIndex 1860[0m
-2023/02/13 11:25:49.810958 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1863, type CompactLog, truncatedIndex 1860[0m
-2023/02/13 11:25:49.810973 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1863, type CompactLog, truncatedIndex 1860[0m
-2023/02/13 11:25:51.795563 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1963, type CompactLog, truncatedIndex 1960[0m
-2023/02/13 11:25:51.806222 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1963, type CompactLog, truncatedIndex 1960[0m
-2023/02/13 11:25:51.806256 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1963, type CompactLog, truncatedIndex 1960[0m
-2023/02/13 11:25:51.806311 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1963, type CompactLog, truncatedIndex 1960[0m
-2023/02/13 11:25:51.806224 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1963, type CompactLog, truncatedIndex 1960[0m
-2023/02/13 11:25:54.415571 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2067, type CompactLog, truncatedIndex 2063[0m
-2023/02/13 11:25:54.420810 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2067, type CompactLog, truncatedIndex 2063[0m
-2023/02/13 11:25:54.426335 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2067, type CompactLog, truncatedIndex 2063[0m
-2023/02/13 11:25:54.426386 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2067, type CompactLog, truncatedIndex 2063[0m
-2023/02/13 11:25:54.432233 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2067, type CompactLog, truncatedIndex 2063[0m
-2023/02/13 11:25:55.160592 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2173, type CompactLog, truncatedIndex 2169[0m
-2023/02/13 11:25:55.171315 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2173, type CompactLog, truncatedIndex 2169[0m
-2023/02/13 11:25:55.173966 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2173, type CompactLog, truncatedIndex 2169[0m
-2023/02/13 11:25:55.174052 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2173, type CompactLog, truncatedIndex 2169[0m
-2023/02/13 11:25:55.176787 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2173, type CompactLog, truncatedIndex 2169[0m
-2023/02/13 11:25:55.917137 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2273, type CompactLog, truncatedIndex 2269[0m
-2023/02/13 11:25:55.930931 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2273, type CompactLog, truncatedIndex 2269[0m
-2023/02/13 11:25:55.931093 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2273, type CompactLog, truncatedIndex 2269[0m
-2023/02/13 11:25:55.931135 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2273, type CompactLog, truncatedIndex 2269[0m
-2023/02/13 11:25:55.931093 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2273, type CompactLog, truncatedIndex 2269[0m
-2023/02/13 11:25:56.674499 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2376, type CompactLog, truncatedIndex 2371[0m
-2023/02/13 11:25:56.682359 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2376, type CompactLog, truncatedIndex 2371[0m
-2023/02/13 11:25:56.684909 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2376, type CompactLog, truncatedIndex 2371[0m
-2023/02/13 11:25:56.684997 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2376, type CompactLog, truncatedIndex 2371[0m
-2023/02/13 11:25:56.685098 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2376, type CompactLog, truncatedIndex 2371[0m
-2023/02/13 11:25:57.421851 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2481, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:25:57.435619 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2481, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:25:57.438412 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2481, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:25:57.446664 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2481, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:25:57.449387 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2481, type CompactLog, truncatedIndex 2474[0m
-2023/02/13 11:25:58.180866 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2582, type CompactLog, truncatedIndex 2575[0m
-2023/02/13 11:25:58.188085 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2582, type CompactLog, truncatedIndex 2575[0m
-2023/02/13 11:25:58.190465 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2582, type CompactLog, truncatedIndex 2575[0m
-2023/02/13 11:25:58.198443 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2582, type CompactLog, truncatedIndex 2575[0m
-2023/02/13 11:25:58.218703 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2582, type CompactLog, truncatedIndex 2575[0m
-2023/02/13 11:26:01.412515 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2678, type CompactLog, truncatedIndex 2675[0m
-2023/02/13 11:26:01.417477 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2678, type CompactLog, truncatedIndex 2675[0m
-2023/02/13 11:26:01.420399 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2678, type CompactLog, truncatedIndex 2675[0m
-2023/02/13 11:26:01.420462 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2678, type CompactLog, truncatedIndex 2675[0m
-2023/02/13 11:26:01.420496 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2678, type CompactLog, truncatedIndex 2675[0m
-2023/02/13 11:26:03.400766 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:26:03.406022 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:26:03.406101 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:26:03.406105 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:26:03.408965 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2779, type CompactLog, truncatedIndex 2776[0m
-2023/02/13 11:26:05.403714 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2879, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:26:05.408834 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2879, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:26:05.414523 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2879, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:26:05.414559 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2879, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:26:05.414567 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2879, type CompactLog, truncatedIndex 2876[0m
-2023/02/13 11:26:07.408457 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:26:07.408515 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:26:07.408547 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:26:07.408591 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:26:07.408655 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
---- PASS: TestSnapshotUnreliable2C (43.44s)
-PASS
-ok  	github.com/pingcap-incubator/tinykv/kv/test_raftstore	43.490s
-GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestSnapshotUnreliableRecover2C|| true
-=== RUN   TestSnapshotUnreliableRecover2C
-2023/02/13 11:26:09.757354 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:26:09.757617 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 1[0m
-2023/02/13 11:26:09.757700 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 185.472µs[0m
-2023/02/13 11:26:09.758085 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:26:09.758168 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 2[0m
-2023/02/13 11:26:09.758220 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 78.427µs[0m
-2023/02/13 11:26:09.758544 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:26:09.758612 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 3[0m
-2023/02/13 11:26:09.758669 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 78.423µs[0m
-2023/02/13 11:26:09.759010 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:26:09.759076 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 4[0m
-2023/02/13 11:26:09.759125 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 71.34µs[0m
-2023/02/13 11:26:09.759433 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:26:09.759502 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 5[0m
-2023/02/13 11:26:09.759549 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 70.052µs[0m
-2023/02/13 11:26:11.452109 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 113, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:11.462799 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 113, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:11.462859 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 113, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:11.468399 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 113, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:11.473992 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 113, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:12.189386 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 225, type CompactLog, truncatedIndex 218[0m
-2023/02/13 11:26:12.200881 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 225, type CompactLog, truncatedIndex 218[0m
-2023/02/13 11:26:12.206261 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 225, type CompactLog, truncatedIndex 218[0m
-2023/02/13 11:26:12.206361 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 225, type CompactLog, truncatedIndex 218[0m
-2023/02/13 11:26:12.206542 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 225, type CompactLog, truncatedIndex 218[0m
-2023/02/13 11:26:12.948117 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 330, type CompactLog, truncatedIndex 323[0m
-2023/02/13 11:26:12.958767 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 330, type CompactLog, truncatedIndex 323[0m
-2023/02/13 11:26:12.958795 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 330, type CompactLog, truncatedIndex 323[0m
-2023/02/13 11:26:12.971485 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 330, type CompactLog, truncatedIndex 323[0m
-2023/02/13 11:26:12.976845 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 330, type CompactLog, truncatedIndex 323[0m
-2023/02/13 11:26:13.694164 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 429, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:26:13.704221 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 429, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:26:13.706632 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 429, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:26:13.709274 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 429, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:26:13.732894 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 429, type CompactLog, truncatedIndex 425[0m
-2023/02/13 11:26:14.500684 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 534, type CompactLog, truncatedIndex 530[0m
-2023/02/13 11:26:14.508485 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 534, type CompactLog, truncatedIndex 530[0m
-2023/02/13 11:26:14.510964 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 534, type CompactLog, truncatedIndex 530[0m
-2023/02/13 11:26:14.513541 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 534, type CompactLog, truncatedIndex 530[0m
-2023/02/13 11:26:14.524458 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 534, type CompactLog, truncatedIndex 530[0m
-2023/02/13 11:26:16.764363 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:26:16.764400 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:26:16.764441 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:26:16.764460 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:26:16.764489 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:26:16.764540 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:26:17.265668 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:26:17.266293 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:26:17.266491 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 1[0m
-2023/02/13 11:26:17.266676 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 266.576µs[0m
-2023/02/13 11:26:17.267322 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:26:17.267456 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 2[0m
-2023/02/13 11:26:17.267602 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 198.012µs[0m
-2023/02/13 11:26:17.268215 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:26:17.268359 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 3[0m
-2023/02/13 11:26:17.268505 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 190.107µs[0m
-2023/02/13 11:26:17.269052 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:26:17.269198 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 4[0m
-2023/02/13 11:26:17.269346 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 201.195µs[0m
-2023/02/13 11:26:17.269929 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:26:17.270052 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 5[0m
-2023/02/13 11:26:17.270201 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 189.229µs[0m
-2023/02/13 11:26:18.143631 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 633, type CompactLog, truncatedIndex 630[0m
-2023/02/13 11:26:18.151389 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 633, type CompactLog, truncatedIndex 630[0m
-2023/02/13 11:26:18.153812 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 633, type CompactLog, truncatedIndex 630[0m
-2023/02/13 11:26:18.153840 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 633, type CompactLog, truncatedIndex 630[0m
-2023/02/13 11:26:18.153894 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 633, type CompactLog, truncatedIndex 630[0m
-2023/02/13 11:26:20.077070 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 733, type CompactLog, truncatedIndex 730[0m
-2023/02/13 11:26:20.078668 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 733, type CompactLog, truncatedIndex 730[0m
-2023/02/13 11:26:20.079435 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 733, type CompactLog, truncatedIndex 730[0m
-2023/02/13 11:26:20.080268 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 733, type CompactLog, truncatedIndex 730[0m
-2023/02/13 11:26:20.080290 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 733, type CompactLog, truncatedIndex 730[0m
-2023/02/13 11:26:22.196387 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 833, type CompactLog, truncatedIndex 831[0m
-2023/02/13 11:26:22.201358 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 833, type CompactLog, truncatedIndex 831[0m
-2023/02/13 11:26:22.201423 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 833, type CompactLog, truncatedIndex 831[0m
-2023/02/13 11:26:22.201363 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 833, type CompactLog, truncatedIndex 831[0m
-2023/02/13 11:26:22.204039 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 833, type CompactLog, truncatedIndex 831[0m
-2023/02/13 11:26:24.147050 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 935, type CompactLog, truncatedIndex 932[0m
-2023/02/13 11:26:24.149656 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 935, type CompactLog, truncatedIndex 932[0m
-2023/02/13 11:26:24.149767 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 935, type CompactLog, truncatedIndex 932[0m
-2023/02/13 11:26:24.152355 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 935, type CompactLog, truncatedIndex 932[0m
-2023/02/13 11:26:24.152445 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 935, type CompactLog, truncatedIndex 932[0m
-2023/02/13 11:26:25.997765 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1044, type CompactLog, truncatedIndex 1037[0m
-2023/02/13 11:26:26.002887 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1044, type CompactLog, truncatedIndex 1037[0m
-2023/02/13 11:26:26.012656 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1044, type CompactLog, truncatedIndex 1037[0m
-2023/02/13 11:26:26.012708 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1044, type CompactLog, truncatedIndex 1037[0m
-2023/02/13 11:26:26.015222 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1044, type CompactLog, truncatedIndex 1037[0m
-2023/02/13 11:26:26.699232 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1150, type CompactLog, truncatedIndex 1145[0m
-2023/02/13 11:26:26.707123 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1150, type CompactLog, truncatedIndex 1145[0m
-2023/02/13 11:26:26.709852 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1150, type CompactLog, truncatedIndex 1145[0m
-2023/02/13 11:26:26.709853 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1150, type CompactLog, truncatedIndex 1145[0m
-2023/02/13 11:26:26.715107 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1150, type CompactLog, truncatedIndex 1145[0m
-2023/02/13 11:26:27.362190 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1255, type CompactLog, truncatedIndex 1248[0m
-2023/02/13 11:26:27.366859 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1255, type CompactLog, truncatedIndex 1248[0m
-2023/02/13 11:26:27.369651 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1255, type CompactLog, truncatedIndex 1248[0m
-2023/02/13 11:26:27.372458 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1255, type CompactLog, truncatedIndex 1248[0m
-2023/02/13 11:26:27.372517 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1255, type CompactLog, truncatedIndex 1248[0m
-2023/02/13 11:26:28.050336 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1359, type CompactLog, truncatedIndex 1352[0m
-2023/02/13 11:26:28.062207 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1359, type CompactLog, truncatedIndex 1352[0m
-2023/02/13 11:26:28.062188 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1359, type CompactLog, truncatedIndex 1352[0m
-2023/02/13 11:26:28.064810 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1359, type CompactLog, truncatedIndex 1352[0m
-2023/02/13 11:26:28.070582 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1359, type CompactLog, truncatedIndex 1352[0m
-2023/02/13 11:26:28.849836 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1461, type CompactLog, truncatedIndex 1455[0m
-2023/02/13 11:26:28.860201 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1461, type CompactLog, truncatedIndex 1455[0m
-2023/02/13 11:26:28.865416 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1461, type CompactLog, truncatedIndex 1455[0m
-2023/02/13 11:26:28.870939 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1461, type CompactLog, truncatedIndex 1455[0m
-2023/02/13 11:26:28.871056 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1461, type CompactLog, truncatedIndex 1455[0m
-2023/02/13 11:26:30.280264 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1563, type CompactLog, truncatedIndex 1556[0m
-2023/02/13 11:26:30.285386 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1563, type CompactLog, truncatedIndex 1556[0m
-2023/02/13 11:26:30.303089 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1563, type CompactLog, truncatedIndex 1556[0m
-2023/02/13 11:26:30.303114 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1563, type CompactLog, truncatedIndex 1556[0m
-2023/02/13 11:26:30.319256 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1569, type CompactLog, truncatedIndex 1561[0m
-2023/02/13 11:26:30.321800 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1569, type CompactLog, truncatedIndex 1561[0m
-2023/02/13 11:26:30.324368 peer_storage.go:182: [0;37m[info] [region 1] 1 requesting snapshot[0m
-2023/02/13 11:26:30.324399 raft.go:262: [0;37m[info] [Snapshot Request]1 to 5, prevLogIndex 1560, dummyIndex 1562[0m
-2023/02/13 11:26:30.326815 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore4020572826/snap/gen_1_7_1570_(default|write|lock).sst, key count 304, size 7854[0m
-2023/02/13 11:26:30.372541 raft.go:262: [0;37m[info] [Snapshot Request]1 to 5, prevLogIndex 1560, dummyIndex 1562[0m
-2023/02/13 11:26:30.583881 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1563, type CompactLog, truncatedIndex 1556[0m
-2023/02/13 11:26:30.583928 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1569, type CompactLog, truncatedIndex 1561[0m
-2023/02/13 11:26:30.586528 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1569, type CompactLog, truncatedIndex 1561[0m
-2023/02/13 11:26:30.990991 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1569, type CompactLog, truncatedIndex 1561[0m
-2023/02/13 11:26:31.401331 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:26:31.401369 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:26:31.401408 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:26:31.401475 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:26:31.401499 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:26:31.401524 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:26:31.902236 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:26:31.902877 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:26:31.903121 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 1[0m
-2023/02/13 11:26:31.903292 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 247.456µs[0m
-2023/02/13 11:26:31.903995 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:26:31.904166 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 2[0m
-2023/02/13 11:26:31.904332 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 237.965µs[0m
-2023/02/13 11:26:31.905028 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:26:31.905182 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 3[0m
-2023/02/13 11:26:31.905337 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 207.617µs[0m
-2023/02/13 11:26:31.905964 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:26:31.906111 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 4[0m
-2023/02/13 11:26:31.906258 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 197.457µs[0m
-2023/02/13 11:26:31.906995 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:26:31.907149 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 5[0m
-2023/02/13 11:26:31.907290 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 191.25µs[0m
-2023/02/13 11:26:34.133789 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1663, type CompactLog, truncatedIndex 1661[0m
-2023/02/13 11:26:34.138924 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1663, type CompactLog, truncatedIndex 1661[0m
-2023/02/13 11:26:34.138950 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1663, type CompactLog, truncatedIndex 1661[0m
-2023/02/13 11:26:34.138938 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1663, type CompactLog, truncatedIndex 1661[0m
-2023/02/13 11:26:34.141595 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1663, type CompactLog, truncatedIndex 1661[0m
-2023/02/13 11:26:36.126912 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1764, type CompactLog, truncatedIndex 1761[0m
-2023/02/13 11:26:36.132153 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1764, type CompactLog, truncatedIndex 1761[0m
-2023/02/13 11:26:36.132172 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1764, type CompactLog, truncatedIndex 1761[0m
-2023/02/13 11:26:36.137783 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1764, type CompactLog, truncatedIndex 1761[0m
-2023/02/13 11:26:36.137863 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1764, type CompactLog, truncatedIndex 1761[0m
-2023/02/13 11:26:38.179630 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1865, type CompactLog, truncatedIndex 1863[0m
-2023/02/13 11:26:38.182398 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1865, type CompactLog, truncatedIndex 1863[0m
-2023/02/13 11:26:38.185116 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1865, type CompactLog, truncatedIndex 1863[0m
-2023/02/13 11:26:38.185166 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1865, type CompactLog, truncatedIndex 1863[0m
-2023/02/13 11:26:38.185217 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1865, type CompactLog, truncatedIndex 1863[0m
-2023/02/13 11:26:40.197887 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 1974, type CompactLog, truncatedIndex 1967[0m
-2023/02/13 11:26:40.207848 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 1974, type CompactLog, truncatedIndex 1967[0m
-2023/02/13 11:26:40.207972 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 1974, type CompactLog, truncatedIndex 1967[0m
-2023/02/13 11:26:40.207995 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 1974, type CompactLog, truncatedIndex 1967[0m
-2023/02/13 11:26:40.208093 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 1974, type CompactLog, truncatedIndex 1967[0m
-2023/02/13 11:26:40.901068 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2073, type CompactLog, truncatedIndex 2068[0m
-2023/02/13 11:26:40.908441 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2073, type CompactLog, truncatedIndex 2068[0m
-2023/02/13 11:26:40.910972 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2073, type CompactLog, truncatedIndex 2068[0m
-2023/02/13 11:26:40.910981 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2073, type CompactLog, truncatedIndex 2068[0m
-2023/02/13 11:26:40.919390 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2073, type CompactLog, truncatedIndex 2068[0m
-2023/02/13 11:26:41.589858 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2175, type CompactLog, truncatedIndex 2171[0m
-2023/02/13 11:26:41.594950 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2175, type CompactLog, truncatedIndex 2171[0m
-2023/02/13 11:26:41.595100 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2175, type CompactLog, truncatedIndex 2171[0m
-2023/02/13 11:26:41.600851 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2175, type CompactLog, truncatedIndex 2171[0m
-2023/02/13 11:26:41.600850 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2175, type CompactLog, truncatedIndex 2171[0m
-2023/02/13 11:26:42.344337 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2284, type CompactLog, truncatedIndex 2278[0m
-2023/02/13 11:26:42.354569 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2284, type CompactLog, truncatedIndex 2278[0m
-2023/02/13 11:26:42.354591 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2284, type CompactLog, truncatedIndex 2278[0m
-2023/02/13 11:26:42.354587 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2284, type CompactLog, truncatedIndex 2278[0m
-2023/02/13 11:26:42.365192 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2284, type CompactLog, truncatedIndex 2278[0m
-2023/02/13 11:26:43.136907 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2389, type CompactLog, truncatedIndex 2383[0m
-2023/02/13 11:26:43.154012 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2389, type CompactLog, truncatedIndex 2383[0m
-2023/02/13 11:26:43.156118 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2389, type CompactLog, truncatedIndex 2383[0m
-2023/02/13 11:26:43.158393 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2389, type CompactLog, truncatedIndex 2383[0m
-2023/02/13 11:26:43.163940 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2389, type CompactLog, truncatedIndex 2383[0m
-2023/02/13 11:26:43.989576 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2493, type CompactLog, truncatedIndex 2486[0m
-2023/02/13 11:26:44.008833 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2493, type CompactLog, truncatedIndex 2486[0m
-2023/02/13 11:26:44.008859 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2493, type CompactLog, truncatedIndex 2486[0m
-2023/02/13 11:26:44.011207 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2493, type CompactLog, truncatedIndex 2486[0m
-2023/02/13 11:26:44.011214 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2493, type CompactLog, truncatedIndex 2486[0m
-2023/02/13 11:26:45.806353 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:26:45.806389 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:26:45.806431 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:26:45.806470 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:26:45.806496 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:26:45.806517 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:26:46.306634 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:26:46.307161 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:26:46.307358 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 1[0m
-2023/02/13 11:26:46.307477 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 192.773µs[0m
-2023/02/13 11:26:46.307931 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:26:46.308032 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 2[0m
-2023/02/13 11:26:46.308133 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 142.347µs[0m
-2023/02/13 11:26:46.308611 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:26:46.308701 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 3[0m
-2023/02/13 11:26:46.308792 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 124.402µs[0m
-2023/02/13 11:26:46.309244 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:26:46.309335 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 4[0m
-2023/02/13 11:26:46.309444 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 147.415µs[0m
-2023/02/13 11:26:46.309886 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:26:46.309969 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 5[0m
-2023/02/13 11:26:46.310066 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 128.667µs[0m
-2023/02/13 11:26:48.431088 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2590, type CompactLog, truncatedIndex 2587[0m
-2023/02/13 11:26:48.436013 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2590, type CompactLog, truncatedIndex 2587[0m
-2023/02/13 11:26:48.438935 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2590, type CompactLog, truncatedIndex 2587[0m
-2023/02/13 11:26:48.439037 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2590, type CompactLog, truncatedIndex 2587[0m
-2023/02/13 11:26:48.441738 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2590, type CompactLog, truncatedIndex 2587[0m
-2023/02/13 11:26:50.326543 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2690, type CompactLog, truncatedIndex 2687[0m
-2023/02/13 11:26:50.334579 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2690, type CompactLog, truncatedIndex 2687[0m
-2023/02/13 11:26:50.334593 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2690, type CompactLog, truncatedIndex 2687[0m
-2023/02/13 11:26:50.337070 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2690, type CompactLog, truncatedIndex 2687[0m
-2023/02/13 11:26:50.345121 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2690, type CompactLog, truncatedIndex 2687[0m
-2023/02/13 11:26:52.274262 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 2790, type CompactLog, truncatedIndex 2787[0m
-2023/02/13 11:26:52.285413 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 2790, type CompactLog, truncatedIndex 2787[0m
-2023/02/13 11:26:52.287876 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 2790, type CompactLog, truncatedIndex 2787[0m
-2023/02/13 11:26:52.293213 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 2790, type CompactLog, truncatedIndex 2787[0m
-2023/02/13 11:26:52.293220 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 2790, type CompactLog, truncatedIndex 2787[0m
-2023/02/13 11:26:53.755641 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:26:53.755716 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:26:53.755739 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:26:53.755764 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:26:53.755786 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
---- PASS: TestSnapshotUnreliableRecover2C (45.04s)
-PASS
-ok  	github.com/pingcap-incubator/tinykv/kv/test_raftstore	45.134s
-GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestSnapshotUnreliableRecoverConcurrentPartition2C|| true
-=== RUN   TestSnapshotUnreliableRecoverConcurrentPartition2C
-2023/02/13 11:26:56.228425 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:26:56.228668 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 1[0m
-2023/02/13 11:26:56.228743 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 177.301µs[0m
-2023/02/13 11:26:56.229129 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:26:56.229207 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 2[0m
-2023/02/13 11:26:56.229258 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 80.367µs[0m
-2023/02/13 11:26:56.229571 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:26:56.229648 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 3[0m
-2023/02/13 11:26:56.229696 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 75.402µs[0m
-2023/02/13 11:26:56.230019 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:26:56.230081 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 4[0m
-2023/02/13 11:26:56.230142 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 80.509µs[0m
-2023/02/13 11:26:56.230464 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:26:56.230532 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 5[0m
-2023/02/13 11:26:56.230583 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 74.187µs[0m
-2023/02/13 11:26:57.531171 test_test.go:104: [0;37m[info] partition: [2 3 4], [1 5][0m
-2023/02/13 11:26:57.976238 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 114, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:57.979894 peer_storage.go:182: [0;37m[info] [region 1] 4 requesting snapshot[0m
-2023/02/13 11:26:57.979916 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.979922 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.979930 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.979934 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.979944 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.979961 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.980873 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore1220432295/snap/gen_1_6_114_(default|write|lock).sst, key count 61, size 1537[0m
-2023/02/13 11:26:57.987780 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 114, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:57.987872 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 114, type CompactLog, truncatedIndex 107[0m
-2023/02/13 11:26:57.998962 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.998990 peer_storage.go:182: [0;37m[info] [region 1] 4 requesting snapshot[0m
-2023/02/13 11:26:57.999005 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.999026 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.999059 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:57.999549 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore1220432295/snap/gen_1_6_116_(default|write|lock).sst, key count 63, size 1588[0m
-2023/02/13 11:26:58.012226 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 61, dummyIndex 108[0m
-2023/02/13 11:26:58.147741 test_test.go:104: [0;37m[info] partition: [2 5], [1 3 4][0m
-2023/02/13 11:26:58.174702 peer_storage.go:182: [0;37m[info] [region 1] 4 requesting snapshot[0m
-2023/02/13 11:26:58.174731 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.174761 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.174776 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.175374 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore1220432295/snap/gen_1_6_137_(default|write|lock).sst, key count 74, size 1874[0m
-2023/02/13 11:26:58.179751 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.179766 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.179771 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.236059 raft.go:262: [0;37m[info] [Snapshot Request]4 to 1, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:26:58.286331 peer_storage.go:334: [0;37m[info] [region 1] 1 begin to apply snapshot[0m
-2023/02/13 11:26:58.286407 peer_storage.go:298: [0;37m[info] [region 1] clear peer 1 meta key 1 apply key 1 raft key and 57 raft logs, takes 43.073µs[0m
-2023/02/13 11:26:58.286454 region_task.go:93: [0;37m[info] begin apply snap data. [regionId: 1][0m
-2023/02/13 11:26:58.292297 region_task.go:137: [0;37m[info] succeed in deleting data in range. [regionId: 1, startKey: , endKey: ][0m
-2023/02/13 11:26:58.332167 snap.go:700: [0;37m[info] apply snapshot ingested 1 tables[0m
-2023/02/13 11:26:58.332195 region_task.go:117: [0;37m[info] applying new data. [regionId: 1, timeTakes: 39.723329ms][0m
-2023/02/13 11:26:58.332216 peer_storage.go:370: [0;37m[info] [region 1] 1 end to apply snapshot, metaDataIndex 137, truncatedStateIndex 137[0m
-2023/02/13 11:26:58.724822 test_test.go:104: [0;37m[info] partition: [5], [1 2 3 4][0m
-2023/02/13 11:26:59.400910 test_test.go:104: [0;37m[info] partition: [1 4], [2 3 5][0m
-2023/02/13 11:27:00.081952 test_test.go:104: [0;37m[info] partition: [2 4 5], [1 3][0m
-2023/02/13 11:27:00.701039 test_test.go:104: [0;37m[info] partition: [1 2], [3 4 5][0m
-2023/02/13 11:27:01.219208 test_test.go:104: [0;37m[info] partition: [1 2 3], [4 5][0m
-2023/02/13 11:27:01.878289 test_test.go:104: [0;37m[info] partition: [1 2 3], [4 5][0m
-2023/02/13 11:27:02.433380 test_test.go:104: [0;37m[info] partition: [2 3], [1 4 5][0m
-2023/02/13 11:27:03.300939 peer_storage.go:182: [0;37m[info] [region 1] 4 requesting snapshot[0m
-2023/02/13 11:27:03.300967 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.300977 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.300982 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.300987 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.300993 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.300998 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.301541 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore1220432295/snap/gen_1_6_186_(default|write|lock).sst, key count 97, size 2472[0m
-2023/02/13 11:27:03.305859 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.318973 raft.go:262: [0;37m[info] [Snapshot Request]4 to 5, prevLogIndex 62, dummyIndex 108[0m
-2023/02/13 11:27:03.332324 peer_storage.go:334: [0;37m[info] [region 1] 5 begin to apply snapshot[0m
-2023/02/13 11:27:03.332379 peer_storage.go:298: [0;37m[info] [region 1] clear peer 1 meta key 1 apply key 1 raft key and 57 raft logs, takes 31.189µs[0m
-2023/02/13 11:27:03.332423 region_task.go:93: [0;37m[info] begin apply snap data. [regionId: 1][0m
-2023/02/13 11:27:03.342963 region_task.go:137: [0;37m[info] succeed in deleting data in range. [regionId: 1, startKey: , endKey: ][0m
-2023/02/13 11:27:03.405626 snap.go:700: [0;37m[info] apply snapshot ingested 1 tables[0m
-2023/02/13 11:27:03.405651 region_task.go:117: [0;37m[info] applying new data. [regionId: 1, timeTakes: 62.582069ms][0m
-2023/02/13 11:27:03.405677 peer_storage.go:370: [0;37m[info] [region 1] 5 end to apply snapshot, metaDataIndex 186, truncatedStateIndex 186[0m
-2023/02/13 11:27:03.514476 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:27:03.514507 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:27:03.514550 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:27:03.514582 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:27:03.514641 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:27:03.514683 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:27:04.015658 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:27:04.016195 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:27:04.016416 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 >  create peer with ID 1[0m
---- FAIL: TestSnapshotUnreliableRecoverConcurrentPartition2C (8.68s)
-panic: requested entry at index is unavailable [recovered]
-	panic: requested entry at index is unavailable
-
-goroutine 44 [running]:
-testing.tRunner.func1.2({0xac0da0, 0xc000283000})
-	/usr/local/go/src/testing/testing.go:1389 +0x24e
-testing.tRunner.func1()
-	/usr/local/go/src/testing/testing.go:1392 +0x39f
-panic({0xac0da0, 0xc000283000})
-	/usr/local/go/src/runtime/panic.go:838 +0x207
-github.com/pingcap-incubator/tinykv/raft.newLog({0xc79658, 0xc17cad7720})
-	/home/liuwei/tinykv/raft/log.go:68 +0x1e5
-github.com/pingcap-incubator/tinykv/raft.newRaft(0xc000363320)
-	/home/liuwei/tinykv/raft/raft.go:184 +0x30a
-github.com/pingcap-incubator/tinykv/raft.NewRawNode(0xc000363320)
-	/home/liuwei/tinykv/raft/rawnode.go:81 +0x33
-github.com/pingcap-incubator/tinykv/kv/raftstore.NewPeer(0x1, 0xc0002de280, 0xb9a6af?, 0xc17cadd780, 0xc0003633d0?, 0xc1cf2ae6f0)
-	/home/liuwei/tinykv/kv/raftstore/peer.go:136 +0x1f5
-github.com/pingcap-incubator/tinykv/kv/raftstore.createPeer(0x1, 0xc042de80dc?, 0x28?, 0x4999884?, 0xc17cadd780)
-	/home/liuwei/tinykv/kv/raftstore/peer.go:42 +0x105
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).loadPeers.func1(0xc00017c900?)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:156 +0x2f9
-github.com/Connor1996/badger.(*DB).View(0x7f0c82b3dfff?, 0xc000363778)
-	/home/liuwei/go/pkg/mod/github.com/!connor1996/badger@v1.5.1-0.20220222053432-2d2cbf472c77/transaction.go:546 +0x96
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).loadPeers(0xc1cf2b4080)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:123 +0x245
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).start(0xc1cf2b4080, 0xc1cf2b4100, 0xc0002de280, 0xc000371920, {0xc72a00?, 0xc0002c5540}, {0xc7ac20?, 0xc0003087e0}, 0xc1cf2b40c0)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:252 +0x74d
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Node).startNode(0xc1cf2ae480, 0xc78a08?, {0xc72a00, 0xc0002c5540}, 0x419187?)
-	/home/liuwei/tinykv/kv/raftstore/node.go:194 +0xd1
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Node).Start(0xc1cf2ae480, {0xc78a08, 0xc00013c008}, 0xc0003087e0?, {0xc72a00, 0xc0002c5540}, 0x9b5626?)
-	/home/liuwei/tinykv/kv/raftstore/node.go:71 +0x1cc
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.(*NodeSimulator).RunStore(0xc0002c5580, 0xc0002de280, 0x1?, {0xc78a08, 0xc00013c008})
-	/home/liuwei/tinykv/kv/test_raftstore/node.go:155 +0x1f0
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.(*Cluster).StartServer(0xc000284660, 0x1?)
-	/home/liuwei/tinykv/kv/test_raftstore/cluster.go:172 +0x10d
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.GenericTest(0xc0002c2b60, {0xb828f6, 0x2}, 0x5, 0x1, 0x1, 0x1, 0x64, 0x0, 0x0)
-	/home/liuwei/tinykv/kv/test_raftstore/test_test.go:267 +0xa49
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.TestSnapshotUnreliableRecoverConcurrentPartition2C(0x411cd9?)
-	/home/liuwei/tinykv/kv/test_raftstore/test_test.go:521 +0x45
-testing.tRunner(0xc0002c2b60, 0xbd2468)
-	/usr/local/go/src/testing/testing.go:1439 +0x102
-created by testing.(*T).Run
-	/usr/local/go/src/testing/testing.go:1486 +0x35f
-FAIL	github.com/pingcap-incubator/tinykv/kv/test_raftstore	8.827s
-FAIL
-rm -rf /tmp/*test-raftstore*
+2023/02/15 10:03:34.606587 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
+2023/02/15 10:03:34.606817 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 1[0m
+2023/02/15 10:03:34.607067 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 340.362µs[0m
+2023/02/15 10:03:34.607698 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
+2023/02/15 10:03:34.607858 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 2[0m
+2023/02/15 10:03:34.608026 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 225.285µs[0m
+2023/02/15 10:03:34.608691 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
+2023/02/15 10:03:34.608836 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 3[0m
+2023/02/15 10:03:34.609065 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 276.046µs[0m
+2023/02/15 10:03:34.609743 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
+2023/02/15 10:03:34.609918 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 4[0m
+2023/02/15 10:03:34.610132 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 277.623µs[0m
+2023/02/15 10:03:34.610751 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
+2023/02/15 10:03:34.610931 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:3 store_id:3 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 >  create peer with ID 5[0m
+2023/02/15 10:03:34.611102 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 260.304µs[0m
+2023/02/15 10:03:36.764996 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 332, type CompactLog, truncatedIndex 330[0m
+2023/02/15 10:03:36.775453 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 332, type CompactLog, truncatedIndex 330[0m
+2023/02/15 10:03:36.777225 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 332, type CompactLog, truncatedIndex 330[0m
+2023/02/15 10:03:36.801083 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 332, type CompactLog, truncatedIndex 330[0m
+2023/02/15 10:03:36.826848 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 332, type CompactLog, truncatedIndex 330[0m
+2023/02/15 10:05:14.943915 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 432, type CompactLog, truncatedIndex 430[0m
+2023/02/15 10:05:14.968213 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 432, type CompactLog, truncatedIndex 430[0m
+2023/02/15 10:05:14.968228 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 432, type CompactLog, truncatedIndex 430[0m
+2023/02/15 10:05:14.992640 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 432, type CompactLog, truncatedIndex 430[0m
+2023/02/15 10:05:14.992725 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 432, type CompactLog, truncatedIndex 430[0m
+FAIL	github.com/pingcap-incubator/tinykv/kv/test_raftstore	150.638s

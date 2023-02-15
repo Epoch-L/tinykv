@@ -973,9 +973,24 @@ func (r *Raft) handleSnapshot(m pb.Message) {
 // addNode add a new node to raft group
 func (r *Raft) addNode(id uint64) {
 	// Your Code Here (3A).
+	if _, ok := r.Prs[id]; !ok {
+		r.Prs[id] = &Progress{Next: r.RaftLog.LastIndex() + 1}
+		r.PendingConfIndex = None // 清除 PendingConfIndex 表示当前没有未完成的配置更新
+	}
 }
 
 // removeNode remove a node from raft group
 func (r *Raft) removeNode(id uint64) {
 	// Your Code Here (3A).
+	if _, ok := r.Prs[id]; ok {
+		delete(r.Prs, id)
+		// 如果是删除节点，由于有节点被移除了，这个时候可能有新的日志可以提交
+		// 这是必要的，因为 TinyKV 只有在 handleAppendRequestResponse 的时候才会判断是否有新的日志可以提交
+		// 如果节点被移除了，则可能会因为缺少这个节点的回复，导致可以提交的日志无法在当前任期被提交
+		if r.State == StateLeader && r.maybeCommit() {
+			log.Infof("[removeNode commit] %v leader commit new entry, commitIndex %v", r.id, r.RaftLog.committed)
+			r.broadcastAppendEntry() // 广播更新所有 follower 的 commitIndex
+		}
+	}
+	r.PendingConfIndex = None // 清除 PendingConfIndex 表示当前没有未完成的配置更新
 }

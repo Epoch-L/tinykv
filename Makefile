@@ -85,7 +85,7 @@ project2b:
 	$(TEST_CLEAN)
 
 project2c:
-	# $(TEST_CLEAN)
+	$(TEST_CLEAN)
 	$(GOTEST) ./raft -run 2C || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestOneSnapshot2C$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotRecover2C$ || true
@@ -93,7 +93,7 @@ project2c:
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotUnreliable2C$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotUnreliableRecover2C$ || true
 	$(GOTEST) ./kv/test_raftstore -run ^TestSnapshotUnreliableRecoverConcurrentPartition2C$ || true
-	# $(TEST_CLEAN)
+	$(TEST_CLEAN)
 
 project3: project3a project3b project3c
 

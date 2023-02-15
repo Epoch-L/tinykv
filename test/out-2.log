@@ -1,145 +1,36 @@
-# rm -rf /tmp/*test-raftstore*
-GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./raft -run 2C || true
-=== RUN   TestRestoreSnapshot2C
---- PASS: TestRestoreSnapshot2C (0.00s)
-=== RUN   TestRestoreIgnoreSnapshot2C
---- PASS: TestRestoreIgnoreSnapshot2C (0.00s)
-=== RUN   TestProvideSnap2C
-2023/02/13 11:27:05 raft.go:262: [0;37m[info] [Snapshot Request]1 to 2, prevLogIndex 9, dummyIndex 12[0m
---- PASS: TestProvideSnap2C (0.00s)
-=== RUN   TestRestoreFromSnapMsg2C
---- PASS: TestRestoreFromSnapMsg2C (0.00s)
-=== RUN   TestRestoreFromSnapWithOverlapingPeersMsg2C
---- PASS: TestRestoreFromSnapWithOverlapingPeersMsg2C (0.00s)
-=== RUN   TestSlowNodeRestore2C
---- PASS: TestSlowNodeRestore2C (0.00s)
-=== RUN   TestRawNodeRestartFromSnapshot2C
---- PASS: TestRawNodeRestartFromSnapshot2C (0.00s)
+GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./raft -run 3A
+=== RUN   TestAddNode3A
+--- PASS: TestAddNode3A (0.00s)
+=== RUN   TestRemoveNode3A
+--- PASS: TestRemoveNode3A (0.00s)
+=== RUN   TestCommitAfterRemoveNode3A
+2023/02/14 09:33:49 raft.go:991: [0;37m[info] [removeNode commit] 1 leader commit new entry, commitIndex 3[0m
+--- PASS: TestCommitAfterRemoveNode3A (0.00s)
+=== RUN   TestLeaderTransferToUpToDateNode3A
+--- PASS: TestLeaderTransferToUpToDateNode3A (0.00s)
+=== RUN   TestLeaderTransferToUpToDateNodeFromFollower3A
+--- PASS: TestLeaderTransferToUpToDateNodeFromFollower3A (0.00s)
+=== RUN   TestLeaderTransferToSlowFollower3A
+--- PASS: TestLeaderTransferToSlowFollower3A (0.00s)
+=== RUN   TestLeaderTransferAfterSnapshot3A
+--- PASS: TestLeaderTransferAfterSnapshot3A (0.00s)
+=== RUN   TestLeaderTransferToSelf3A
+--- PASS: TestLeaderTransferToSelf3A (0.00s)
+=== RUN   TestLeaderTransferToNonExistingNode3A
+--- PASS: TestLeaderTransferToNonExistingNode3A (0.00s)
+=== RUN   TestLeaderTransferReceiveHigherTermVote3A
+--- PASS: TestLeaderTransferReceiveHigherTermVote3A (0.00s)
+=== RUN   TestLeaderTransferRemoveNode3A
+--- PASS: TestLeaderTransferRemoveNode3A (0.00s)
+=== RUN   TestLeaderTransferBack3A
+--- PASS: TestLeaderTransferBack3A (0.00s)
+=== RUN   TestLeaderTransferSecondTransferToAnotherNode3A
+--- PASS: TestLeaderTransferSecondTransferToAnotherNode3A (0.00s)
+=== RUN   TestTransferNonMember3A
+--- PASS: TestTransferNonMember3A (0.00s)
+=== RUN   TestRawNodeProposeAndConfChange3A
+--- PASS: TestRawNodeProposeAndConfChange3A (0.00s)
+=== RUN   TestRawNodeProposeAddDuplicateNode3A
+--- PASS: TestRawNodeProposeAddDuplicateNode3A (0.00s)
 PASS
 ok  	github.com/pingcap-incubator/tinykv/raft	0.009s
-GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestOneSnapshot2C|| true
-=== RUN   TestOneSnapshot2C
-2023/02/13 11:27:06.796392 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:27:06.796623 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
-2023/02/13 11:27:06.796699 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 166.91µs[0m
-2023/02/13 11:27:06.797103 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:27:06.797177 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
-2023/02/13 11:27:06.797237 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 84.811µs[0m
-2023/02/13 11:27:06.797631 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:27:06.797701 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
-2023/02/13 11:27:06.797752 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 73.247µs[0m
-2023/02/13 11:27:08.768027 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 18, type CompactLog, truncatedIndex 16[0m
-2023/02/13 11:27:08.770660 peer_storage.go:182: [0;37m[info] [region 1] 3 requesting snapshot[0m
-2023/02/13 11:27:08.770681 raft.go:262: [0;37m[info] [Snapshot Request]3 to 1, prevLogIndex 8, dummyIndex 17[0m
-2023/02/13 11:27:08.771267 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore818440043/snap/gen_1_7_19_(default|write|lock).sst, key count 11, size 135[0m
-2023/02/13 11:27:08.781350 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 18, type CompactLog, truncatedIndex 16[0m
-2023/02/13 11:27:08.788780 raft.go:262: [0;37m[info] [Snapshot Request]3 to 1, prevLogIndex 8, dummyIndex 17[0m
-2023/02/13 11:27:09.460341 peer_storage.go:182: [0;37m[info] [region 1] 3 requesting snapshot[0m
-2023/02/13 11:27:09.460376 raft.go:262: [0;37m[info] [Snapshot Request]3 to 1, prevLogIndex 9, dummyIndex 17[0m
-2023/02/13 11:27:09.461145 snap.go:549: [0;37m[info] region 1 scan snapshot /tmp/test-raftstore818440043/snap/gen_1_7_26_(default|write|lock).sst, key count 16, size 204[0m
-2023/02/13 11:27:09.555592 raft.go:262: [0;37m[info] [Snapshot Request]3 to 1, prevLogIndex 9, dummyIndex 17[0m
-2023/02/13 11:27:09.563899 peer_storage.go:334: [0;37m[info] [region 1] 1 begin to apply snapshot[0m
-2023/02/13 11:27:09.563925 peer_storage.go:298: [0;37m[info] [region 1] clear peer 1 meta key 1 apply key 1 raft key and 4 raft logs, takes 8.957µs[0m
-2023/02/13 11:27:09.563964 region_task.go:93: [0;37m[info] begin apply snap data. [regionId: 1][0m
-2023/02/13 11:27:09.566446 region_task.go:137: [0;37m[info] succeed in deleting data in range. [regionId: 1, startKey: , endKey: ][0m
-2023/02/13 11:27:09.595067 snap.go:700: [0;37m[info] apply snapshot ingested 1 tables[0m
-2023/02/13 11:27:09.595099 region_task.go:117: [0;37m[info] applying new data. [regionId: 1, timeTakes: 28.559547ms][0m
-2023/02/13 11:27:09.595120 peer_storage.go:370: [0;37m[info] [region 1] 1 end to apply snapshot, metaDataIndex 26, truncatedStateIndex 26[0m
-2023/02/13 11:27:09.602232 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:27:09.602752 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:27:09.602890 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
-2023/02/13 11:27:09.602948 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:27:09.602998 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
---- FAIL: TestOneSnapshot2C (3.32s)
-panic: [region 1] 1 unexpected raft log index: lastIndex 9 < appliedIndex 26 [recovered]
-	panic: [region 1] 1 unexpected raft log index: lastIndex 9 < appliedIndex 26
-
-goroutine 58 [running]:
-testing.tRunner.func1.2({0xaa6280, 0xc071fa1000})
-	/usr/local/go/src/testing/testing.go:1389 +0x24e
-testing.tRunner.func1()
-	/usr/local/go/src/testing/testing.go:1392 +0x39f
-panic({0xaa6280, 0xc071fa1000})
-	/usr/local/go/src/runtime/panic.go:838 +0x207
-github.com/pingcap-incubator/tinykv/kv/raftstore.NewPeerStorage(0xc0000c6360, 0xc0e485ea00, 0xc0e487c1e0, {0xc0e485c880, 0xc})
-	/home/liuwei/tinykv/kv/raftstore/peer_storage.go:65 +0x319
-github.com/pingcap-incubator/tinykv/kv/raftstore.NewPeer(0x1, 0xc0ea080000, 0xb9a6af?, 0xc0e485ea00, 0xc06d5fb680?, 0xc0e48608d0)
-	/home/liuwei/tinykv/kv/raftstore/peer.go:121 +0x145
-github.com/pingcap-incubator/tinykv/kv/raftstore.createPeer(0x1, 0xc042d220d2?, 0x1c?, 0x499988e?, 0xc0e485ea00)
-	/home/liuwei/tinykv/kv/raftstore/peer.go:42 +0x105
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).loadPeers.func1(0xc000264d80?)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:156 +0x2f9
-github.com/Connor1996/badger.(*DB).View(0x7f84ad2bbfff?, 0xc06d5fba28)
-	/home/liuwei/go/pkg/mod/github.com/!connor1996/badger@v1.5.1-0.20220222053432-2d2cbf472c77/transaction.go:546 +0x96
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).loadPeers(0xc071fa3d80)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:123 +0x245
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Raftstore).start(0xc071fa3d80, 0xc071fa3e00, 0xc0ea080000, 0xc0000c6360, {0xc72a00?, 0xc0001d9940}, {0xc7ac20?, 0xc0002587e0}, 0xc071fa3dc0)
-	/home/liuwei/tinykv/kv/raftstore/raftstore.go:252 +0x74d
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Node).startNode(0xc0e4860690, 0xc78a08?, {0xc72a00, 0xc0001d9940}, 0x419187?)
-	/home/liuwei/tinykv/kv/raftstore/node.go:194 +0xd1
-github.com/pingcap-incubator/tinykv/kv/raftstore.(*Node).Start(0xc0e4860690, {0xc78a08, 0xc0001a2008}, 0xc0002587e0?, {0xc72a00, 0xc0001d9940}, 0x9b5626?)
-	/home/liuwei/tinykv/kv/raftstore/node.go:71 +0x1cc
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.(*NodeSimulator).RunStore(0xc0001d9980, 0xc0ea080000, 0x1?, {0xc78a08, 0xc0001a2008})
-	/home/liuwei/tinykv/kv/test_raftstore/node.go:155 +0x1f0
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.(*Cluster).StartServer(0xc00018cf00, 0xb8336a?)
-	/home/liuwei/tinykv/kv/test_raftstore/cluster.go:172 +0x10d
-github.com/pingcap-incubator/tinykv/kv/test_raftstore.TestOneSnapshot2C(0xc000262680)
-	/home/liuwei/tinykv/kv/test_raftstore/test_test.go:483 +0x6f8
-testing.tRunner(0xc000262680, 0xbd2410)
-	/usr/local/go/src/testing/testing.go:1439 +0x102
-created by testing.(*T).Run
-	/usr/local/go/src/testing/testing.go:1486 +0x35f
-FAIL	github.com/pingcap-incubator/tinykv/kv/test_raftstore	3.350s
-FAIL
-GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./kv/test_raftstore -run ^TestSnapshotRecover2C|| true
-=== RUN   TestSnapshotRecover2C
-2023/02/13 11:27:11.669146 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:27:11.669370 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 4[0m
-2023/02/13 11:27:11.669434 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 149.64µs[0m
-2023/02/13 11:27:11.669789 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:27:11.669863 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 5[0m
-2023/02/13 11:27:11.669915 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 78.7µs[0m
-2023/02/13 11:27:11.670202 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:27:11.670269 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
-2023/02/13 11:27:11.670317 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 71.679µs[0m
-2023/02/13 11:27:11.670638 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:27:11.670700 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
-2023/02/13 11:27:11.670745 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 66.515µs[0m
-2023/02/13 11:27:11.671035 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:27:11.671095 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
-2023/02/13 11:27:11.671142 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 66.613µs[0m
-2023/02/13 11:27:14.638800 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 109, type CompactLog, truncatedIndex 106[0m
-2023/02/13 11:27:14.644214 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 109, type CompactLog, truncatedIndex 106[0m
-2023/02/13 11:27:14.646912 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 109, type CompactLog, truncatedIndex 106[0m
-2023/02/13 11:27:14.649777 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 109, type CompactLog, truncatedIndex 106[0m
-2023/02/13 11:27:14.649817 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 109, type CompactLog, truncatedIndex 106[0m
-2023/02/13 11:27:16.593174 peer_msg_handler.go:195: [0;37m[info] 5 apply commit, entry 210, type CompactLog, truncatedIndex 207[0m
-2023/02/13 11:27:16.600938 peer_msg_handler.go:195: [0;37m[info] 1 apply commit, entry 210, type CompactLog, truncatedIndex 207[0m
-2023/02/13 11:27:16.603607 peer_msg_handler.go:195: [0;37m[info] 4 apply commit, entry 210, type CompactLog, truncatedIndex 207[0m
-2023/02/13 11:27:16.603667 peer_msg_handler.go:195: [0;37m[info] 3 apply commit, entry 210, type CompactLog, truncatedIndex 207[0m
-2023/02/13 11:27:16.603610 peer_msg_handler.go:195: [0;37m[info] 2 apply commit, entry 210, type CompactLog, truncatedIndex 207[0m
-2023/02/13 11:27:17.689768 test_test.go:257: [0;33m[warning] shutdown servers
-[0m
-2023/02/13 11:27:17.689796 node.go:198: [0;37m[info] stop raft store thread, storeID: 1[0m
-2023/02/13 11:27:17.699457 node.go:198: [0;37m[info] stop raft store thread, storeID: 2[0m
-2023/02/13 11:27:17.699489 node.go:198: [0;37m[info] stop raft store thread, storeID: 3[0m
-2023/02/13 11:27:17.699504 node.go:198: [0;37m[info] stop raft store thread, storeID: 4[0m
-2023/02/13 11:27:17.699524 node.go:198: [0;37m[info] stop raft store thread, storeID: 5[0m
-2023/02/13 11:27:18.200247 test_test.go:264: [0;33m[warning] restart servers
-[0m
-2023/02/13 11:27:18.200889 node.go:193: [0;37m[info] start raft store node, storeID: 1[0m
-2023/02/13 11:27:18.201101 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 1[0m
-2023/02/13 11:27:18.201298 raftstore.go:174: [0;37m[info] start store 1, region_count 1, tombstone_count 0, takes 293.877µs[0m
-2023/02/13 11:27:18.201900 node.go:193: [0;37m[info] start raft store node, storeID: 2[0m
-2023/02/13 11:27:18.202039 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 2[0m
-2023/02/13 11:27:18.202181 raftstore.go:174: [0;37m[info] start store 2, region_count 1, tombstone_count 0, takes 192.339µs[0m
-2023/02/13 11:27:18.202802 node.go:193: [0;37m[info] start raft store node, storeID: 3[0m
-2023/02/13 11:27:18.202923 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 3[0m
-2023/02/13 11:27:18.203070 raftstore.go:174: [0;37m[info] start store 3, region_count 1, tombstone_count 0, takes 189.542µs[0m
-2023/02/13 11:27:18.203656 node.go:193: [0;37m[info] start raft store node, storeID: 4[0m
-2023/02/13 11:27:18.203773 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 4[0m
-2023/02/13 11:27:18.203915 raftstore.go:174: [0;37m[info] start store 4, region_count 1, tombstone_count 0, takes 187.552µs[0m
-2023/02/13 11:27:18.204582 node.go:193: [0;37m[info] start raft store node, storeID: 5[0m
-2023/02/13 11:27:18.204698 peer.go:41: [0;37m[info] region id:1 region_epoch:<conf_ver:1 version:1 > peers:<id:4 store_id:4 > peers:<id:5 store_id:5 > peers:<id:1 store_id:1 > peers:<id:2 store_id:2 > peers:<id:3 store_id:3 >  create peer with ID 5[0m
-2023/02/13 11:27:18.204837 raftstore.go:174: [0;37m[info] start store 5, region_count 1, tombstone_count 0, takes 182.129µs[0m
-FAIL	github.com/pingcap-incubator/tinykv/kv/test_raftstore	7.519s

@@ -1,1 +1,36 @@
-rm -rf /tmp/*test-raftstore*
+GO111MODULE=on go test -v --count=1 --parallel=1 -p=1 ./raft -run 3A
+=== RUN   TestAddNode3A
+--- PASS: TestAddNode3A (0.00s)
+=== RUN   TestRemoveNode3A
+--- PASS: TestRemoveNode3A (0.00s)
+=== RUN   TestCommitAfterRemoveNode3A
+2023/02/14 09:33:49 raft.go:991: [0;37m[info] [removeNode commit] 1 leader commit new entry, commitIndex 3[0m
+--- PASS: TestCommitAfterRemoveNode3A (0.00s)
+=== RUN   TestLeaderTransferToUpToDateNode3A
+--- PASS: TestLeaderTransferToUpToDateNode3A (0.00s)
+=== RUN   TestLeaderTransferToUpToDateNodeFromFollower3A
+--- PASS: TestLeaderTransferToUpToDateNodeFromFollower3A (0.00s)
+=== RUN   TestLeaderTransferToSlowFollower3A
+--- PASS: TestLeaderTransferToSlowFollower3A (0.00s)
+=== RUN   TestLeaderTransferAfterSnapshot3A
+--- PASS: TestLeaderTransferAfterSnapshot3A (0.00s)
+=== RUN   TestLeaderTransferToSelf3A
+--- PASS: TestLeaderTransferToSelf3A (0.00s)
+=== RUN   TestLeaderTransferToNonExistingNode3A
+--- PASS: TestLeaderTransferToNonExistingNode3A (0.00s)
+=== RUN   TestLeaderTransferReceiveHigherTermVote3A
+--- PASS: TestLeaderTransferReceiveHigherTermVote3A (0.00s)
+=== RUN   TestLeaderTransferRemoveNode3A
+--- PASS: TestLeaderTransferRemoveNode3A (0.00s)
+=== RUN   TestLeaderTransferBack3A
+--- PASS: TestLeaderTransferBack3A (0.00s)
+=== RUN   TestLeaderTransferSecondTransferToAnotherNode3A
+--- PASS: TestLeaderTransferSecondTransferToAnotherNode3A (0.00s)
+=== RUN   TestTransferNonMember3A
+--- PASS: TestTransferNonMember3A (0.00s)
+=== RUN   TestRawNodeProposeAndConfChange3A
+--- PASS: TestRawNodeProposeAndConfChange3A (0.00s)
+=== RUN   TestRawNodeProposeAddDuplicateNode3A
+--- PASS: TestRawNodeProposeAddDuplicateNode3A (0.00s)
+PASS
+ok  	github.com/pingcap-incubator/tinykv/raft	0.007s
